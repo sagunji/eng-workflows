@@ -24,7 +24,22 @@ You need:
 
 If not provided, run `git diff --staged` to see what's staged.
 
-## Step 1 — Preflight
+## Step 1 — Secret guard first
+
+Before anything else — run `secret-guard` on staged changes.
+
+If secret-guard returns BLOCK or REVIEW:
+```
+## PR blocked — sensitive content found
+
+[Surface secret-guard findings verbatim]
+
+Fix these before the PR can be packaged.
+```
+Stop completely. Do not run preflight or generate the PR description
+until secret-guard returns clean.
+
+## Step 2 — Preflight
 
 Run the preflight checks first. If anything fails, stop and report.
 Do not proceed to the PR description with a broken build.

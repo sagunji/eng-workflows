@@ -52,6 +52,9 @@ only report findings that are real. Do not pad with minor nits to seem thorough.
 - Incorrect handling of edge cases (null, empty, zero, negative)
 - Race conditions or concurrency bugs
 
+#### Overrides
+> OVR-001 (2026-04-08): Always check for React key prop warnings in JSX map() calls
+
 ### 2. Security
 - Injection vulnerabilities (SQL, shell, HTML)
 - Hardcoded secrets, tokens, or credentials
@@ -188,3 +191,14 @@ that turn out to be wrong.
 **Code is generated/AI-written:**
 Apply the same standards. AI-generated code often passes syntax checks but
 fails on error handling and edge cases — pay extra attention to those.
+
+---
+
+## Overrides
+
+<!-- Override log — do not edit manually. Use /skill-override to add,
+     revert, or list overrides. -->
+
+| ID | Date | Rule | Reason | Status |
+|----|------|------|--------|--------|
+| OVR-001 | 2026-04-08 | Always check for React key prop warnings in JSX map() calls | SkillFlow project uses many .map() renders | Active |

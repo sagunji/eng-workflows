@@ -1,262 +1,518 @@
-# Full-Stack Dev Toolkit
+# eng-workflows
 
-An AI-powered development toolkit that brings structured engineering practices to your workflow. It includes **12 specialist skills** that activate automatically based on what you say, and **6 slash commands** for orchestrated multi-step workflows.
+AI-powered engineering workflows for development, code review, testing, debugging, and deployment.
 
-## Quick start
+A structured toolkit of **12 skills**, **12 agents**, and **6 commands** that turn common engineering tasks into repeatable, high-quality processes. Works with Claude and Cursor.
 
-Skills trigger automatically from natural language. Just describe what you need:
+---
 
-| You say | Skill that activates |
-|---------|---------------------|
-| "review this code" | code-reviewer |
-| "it's not working" | debug-detective |
-| "write tests for this" | test-writer |
-| "I'm about to deploy" | deploy-checklist |
-| "refactor this" | refactor-guide |
-| "this is slow" | perf-profiler |
+## How it works
 
-Commands are invoked explicitly for structured workflows:
+The toolkit has three layers:
 
 ```
-/council-implement build the user settings page
-/council-review
-/preflight
+┌─────────────────────────────────────────────────────┐
+│                    COMMANDS                          │
+│  Orchestrated multi-step workflows you invoke        │
+│  explicitly: /council-implement, /preflight, etc.    │
+├─────────────────────────────────────────────────────┤
+│                     AGENTS                           │
+│  Specialist roles that own specific domains:         │
+│  frontend-engineer, verifier, council-reviewer, etc. │
+├─────────────────────────────────────────────────────┤
+│                     SKILLS                           │
+│  Focused capabilities that trigger automatically     │
+│  from natural language: code-reviewer, test-writer   │
+└─────────────────────────────────────────────────────┘
 ```
+
+**Skills** activate when you describe what you need in plain language.
+**Agents** are dispatched by the orchestrator or commands to do focused work.
+**Commands** coordinate agents and skills into structured workflows.
+
+---
+
+## Getting started
+
+### Example: build a feature from scratch
+
+```
+You: "Build a user settings page with profile editing and password change"
+
+                          ┌──────────────┐
+                          │  orchestrator │
+                          │  reads task,  │
+                          │  builds plan  │
+                          └──────┬───────┘
+                                 │
+                    ┌────────────┴────────────┐
+                    ▼                         ▼
+           ┌───────────────┐        ┌────────────────┐
+           │   frontend-   │        │    backend-     │
+           │   engineer    │        │    engineer     │
+           │  (UI, hooks)  │        │  (API routes)   │
+           └───────┬───────┘        └────────┬───────┘
+                   │                         │
+                   │   ┌─────────────────┐   │
+                   └──►│ shared-engineer  │◄──┘
+                       │ (shared types)   │
+                       └────────┬────────┘
+                                │
+                       ┌────────▼────────┐
+                       │    verifier     │
+                       │ types, lint,    │
+                       │ tests, build    │
+                       └────────┬────────┘
+                                │
+                       ┌────────▼────────┐
+                       │council-reviewer │
+                       │ 5-role quality  │
+                       │ gate            │
+                       └────────┬────────┘
+                                │
+                       ┌────────▼────────┐
+                       │  pr-packager    │
+                       │ PR description, │
+                       │ deploy checklist│
+                       └─────────────────┘
+```
+
+### Example: debug and fix a bug
+
+```
+You: "I'm getting a TypeError: Cannot read property 'email' of null"
+
+     ┌────────────────┐
+     │debug-detective  │  ← skill triggers automatically
+     │ classifies bug, │
+     │ forms hypotheses│
+     │ finds root cause│
+     └───────┬────────┘
+             │
+     ┌───────▼────────┐
+     │  You apply the  │
+     │  suggested fix   │
+     └───────┬────────┘
+             │
+     ┌───────▼────────┐
+     │  test-writer    │  ← "write tests for the fix"
+     │  locks the fix  │
+     │  with tests     │
+     └───────┬────────┘
+             │
+     ┌───────▼────────┐
+     │  /preflight     │  ← pre-commit check
+     │  secrets, debug │
+     │  artefacts, diff│
+     └────────────────┘
+```
+
+### Example: review before merging
+
+```
+You: /council-review
+
+     ┌────────────────────────────────────────┐
+     │            council-reviewer             │
+     ├────────┬─────────┬────────┬────────────┤
+     │Architect│QA Lead │Security│  DX  │Maint│
+     │structure│coverage│vulns   │clarity│debt │
+     └────┬───┴────┬────┴───┬────┴───┬───┴──┬─┘
+          │        │        │        │      │
+          └────────┴────────┴────────┴──────┘
+                           │
+                    ┌──────▼──────┐
+                    │   Verdict   │
+                    │ GO / REVISE │
+                    │   / BLOCK   │
+                    └─────────────┘
+```
+
+---
 
 ## Commands
 
-### `/council-implement`
+Commands are invoked with `/command-name`. They run multi-step workflows.
 
-Orchestrates a council of specialist agents (frontend engineers, backend engineers, shared-package engineer) to plan, implement, cross-review, and verify a task across a fullstack monorepo. Runs through seven phases:
+### `/council-implement [task]`
 
-1. **Plan** — decomposes the task, defines contracts, waits for your approval
-2. **Implement** — dispatches parallel subagents scoped to specific files
-3. **Cross-review** — each engineer's work is peer-reviewed by another
-4. **Consolidate** — deduplicates logic, unifies types, removes dead code
-5. **Verify** — type checks, linting, formatting, tests
-6. **Council review** — five-role review (Architect, QA, Security, DX, Maintainer)
-7. **Report** — structured summary of everything that happened
+Full implementation workflow with a council of agents.
 
-Use for any task that touches multiple areas of the codebase.
+**Phases:** Plan → Implement (parallel agents) → Cross-review → Consolidate → Verify → Council review → Report
+
+**When to use:** Any task that touches multiple areas of the codebase — features, refactors, or multi-file changes.
+
+**Example:**
+```
+/council-implement add email notifications when an order ships
+```
+
+The orchestrator presents a plan with subtasks, contracts, and execution order. Nothing runs until you approve.
+
+---
 
 ### `/council-review`
 
-Runs a five-role review against a file, staged changes, or a diff:
+Five-role quality review. Each role gives a Pass, Flag, or Block verdict.
 
-| Role | Focus |
-|------|-------|
-| Architect | Structure, patterns, coupling |
+| Role | Checks |
+|------|--------|
+| Architect | Structure, patterns, coupling, boundaries |
 | QA Lead | Test coverage, edge cases, error paths |
-| Security | Vulnerabilities, secrets, injection, auth |
-| DX | Clarity, naming, discoverability |
-| Maintainer | Complexity, duplication, long-term health |
+| Security | Injection, auth, secrets, input validation |
+| DX | Naming, clarity, error messages |
+| Maintainer | Complexity, debt, hardcoded values, TODOs |
 
-Each role gives a verdict: Pass, Flag, or Block. Any Block means NO-GO.
+**When to use:** Before merging any PR. After implementation is verified.
 
-Default output is a compact table. Say `full review` or `expand [role]` for detailed findings.
+**Follow-ups:**
+- `full review` — detailed findings from all five roles
+- `expand security` — detail on one specific role
+- `fix [issue]` — apply a fix and re-run that role
+
+---
 
 ### `/preflight`
 
-Fast pre-commit sanity check. Runs five gates against staged changes:
+Fast pre-commit sanity check. Five gates:
 
-1. **Summary** — one-line description of the change (commit message candidate)
-2. **Secrets** — scans for hardcoded credentials or API keys
+1. **Summary** — one-line commit message candidate
+2. **Secrets** — hardcoded credentials or API keys
 3. **Debug artefacts** — `console.log`, `debugger`, commented-out code, new TODOs
-4. **Test alignment** — logic changed but tests weren't?
-5. **Diff sanity** — unrelated changes mixed together, accidentally staged files
+4. **Test alignment** — logic changed but no tests updated?
+5. **Diff sanity** — unrelated changes mixed, accidentally staged files
 
-Run before every commit. Say `full review` to escalate to `/council-review`.
+**When to use:** Before every commit. Takes under a minute.
 
-### `/retro`
+**Result:** CLEAR TO COMMIT / REVIEW FLAGS / BLOCK
 
-Structured retrospective for sprints, incidents, or completed features. Produces:
+---
 
-- Root-cause analysis (not just symptoms)
-- Actionable items with owners and due dates
-- A **skill gap report** that identifies which `.claude/skills/` helped, which were missing, and which should be improved
+### `/retro [type]`
+
+Structured retrospective.
 
 ```
-/retro sprint     — end-of-sprint retrospective
-/retro incident   — post-incident review
-/retro feature    — post-feature review
+/retro sprint     — what shipped, what slipped, why
+/retro incident   — timeline, root cause, five whys
+/retro feature    — scope vs. reality, estimation accuracy
 ```
+
+Produces actionable items with owners and a **skill gap report** — which skills helped, which were missing, and what to improve.
+
+---
 
 ### `/skill-check`
 
-Validates a `SKILL.md` file before you commit it. Checks:
+Validates a `SKILL.md` file before committing. Checks frontmatter, description quality, trigger overlap with existing skills, instruction specificity, and progressive disclosure.
 
-- Frontmatter structure and naming
-- Description quality and trigger phrases
-- Trigger overlap with existing skills
-- Instruction specificity and examples
-- Progressive disclosure (body vs. `references/` split)
+**When to use:** When adding or editing any skill.
 
-Use when adding or editing any skill.
+---
 
-### `/skill-override`
+### `/skill-override [skill] "[rule]"`
 
-Writes persistent, traceable preferences into a skill without editing its core instructions. Overrides are logged with IDs and can be reverted.
+Persistent, traceable customisation of any skill.
 
 ```
 /skill-override test-writer "we use Vitest, never Jest"
 /skill-override code-reviewer "prefer early returns over nested if"
-/skill-override project-planner "default sprint length is 1 week" --reason "weekly releases"
-/skill-override test-writer list
-/skill-override test-writer revert OVR-001
+/skill-override deploy-checklist "skip the feature flag section"
+/skill-override test-writer list              — see active overrides
+/skill-override test-writer revert OVR-001    — undo an override
 ```
 
-Overrides take precedence over original instructions and are tracked in an append-only log inside the skill file.
+Overrides are logged with IDs, take precedence over original instructions, and can be reverted.
+
+---
+
+## Agents
+
+Agents live in `.cursor/agents/`. They are specialist roles dispatched by the orchestrator or invoked directly.
+
+### orchestrator
+
+The master coordinator. Decomposes any task, presents a plan, waits for approval, then dispatches agents in parallel or sequence. Never writes code itself.
+
+**How to use:** Describe any significant task. The orchestrator reads the codebase, builds a plan, and coordinates everything.
+
+```
+"Build the user settings page"
+"Refactor the OrderService — it's 400 lines"
+"Add webhook support to the notification system"
+```
+
+**Decision tree it follows:**
+
+```
+Frontend only?  → frontend-engineer → verifier → council-reviewer
+Backend only?   → backend-engineer  → verifier → council-reviewer
+Fullstack?      → agree contracts → FE + BE in parallel → shared-engineer
+                  → verifier → council-reviewer
+Refactor?       → refactor-guide skill → appropriate engineer(s) → verifier
+```
+
+---
+
+### frontend-engineer
+
+Senior frontend engineer. Implements React/Next.js features, components, pages, and hooks.
+
+**Standards it follows:**
+- TypeScript strict, no `any`
+- Functional components with explicit props interfaces
+- Error and loading states always handled
+- Tests written alongside implementation (uses `test-writer` skill)
+- JSDoc on exported functions (uses `doc-writer` skill)
+
+---
+
+### backend-engineer
+
+Senior backend engineer. Implements API routes, services, controllers, and DB queries.
+
+**Standards it follows:**
+- TypeScript strict, explicit input validation on every route
+- Service layer separate from route handlers
+- Auth guard on every route accessing user data
+- DB queries scoped to authenticated user
+- Flags security concerns as `// SECURITY:` comments for the security-reviewer
+
+---
+
+### shared-engineer
+
+Shared package specialist. Adds or modifies types, utilities, and constants used across frontend and backend.
+
+**Always invoked last** — after frontend and backend are both validated. Checks for duplication before adding anything. Only pure functions, no I/O, no env vars.
+
+---
+
+### verifier
+
+Sceptical end-to-end verifier. Trusts nothing. Runs type checks, linting, tests, and a fresh-clone simulation. Only auto-fixes formatting — reports everything else.
+
+**Verification sequence:**
+1. Type check (frontend + backend + shared)
+2. Prettier (auto-fixes)
+3. ESLint
+4. Tests
+5. Smoke check (entry points, exports, routes)
+6. Fresh clone simulation (missing deps, undocumented env vars)
+
+**Verdict:** SHIP or FIX FIRST (with prioritised list)
+
+---
+
+### council-reviewer
+
+Five-role quality gate. Reviews all changes after verifier passes.
+
+| Role | Verdict |
+|------|---------|
+| Architect | Structure, patterns, coupling |
+| QA Lead | Test coverage, edge cases |
+| Security | Vulnerabilities, auth, secrets |
+| DX | Clarity, naming, discoverability |
+| Maintainer | Debt, complexity, hardcoded values |
+
+**Verdict:** GO / REVISE / BLOCK. Any Block = overall BLOCK.
+
+---
+
+### qa-lead
+
+QA specialist. Reviews test coverage after implementation agents finish. Identifies untested paths, weak assertions, and missing edge cases. Can write missing tests but never modifies implementation code.
+
+**Gap categories:** untested functions, missing error paths, missing boundary conditions, missing async rejection tests, missing loading/error states.
+
+---
+
+### security-reviewer
+
+Security specialist. Read-only. Reviews code changes for real vulnerabilities with concrete exploitation paths. Traces every user-controlled value from input to output.
+
+**Vectors checked:** injection, auth/authz, secrets, input validation, data exposure, CSRF/XSS, monorepo-specific risks.
+
+---
+
+### context-generator
+
+Project memory agent. Builds and updates `.context/PROJECT.md` with accumulated knowledge — stack, architecture, patterns, decisions, gotchas. Invoked after features ship, after ADRs, after retros, and at session start.
+
+**Solves:** every Cursor session starts with no memory. PROJECT.md gives all agents full context from the start.
+
+---
+
+### debt-tracker
+
+Technical debt auditor. Scans for TODOs, FIXMEs, skipped tests, console.logs, large files, `any` types, empty catches, and outdated dependencies. Writes a prioritised register to `.context/DEBT.md`.
+
+**Priority levels:**
+- P1 — blocks correctness, causes active pain
+- P2 — slows development, creates risk
+- P3 — quality and maintainability
+
+---
+
+### pr-packager
+
+PR preparation agent. Runs preflight, writes PR description, generates deploy checklist (if production), and updates context file — all in one pass.
+
+**When to use:** When work is ready to merge. Say "prepare this PR" or "package this up."
+
+---
+
+### onboarding-guide
+
+Generates a getting-started guide for new developers. Reads the codebase and `.context/PROJECT.md` to produce a practical onboarding doc covering setup, architecture, patterns, and first tasks.
+
+---
 
 ## Skills
 
+Skills live in `.claude/skills/`. They trigger automatically from natural language.
+
 ### Code quality
 
-**code-reviewer** — Reviews code for logic bugs, style issues, naming, complexity, and anti-patterns. Produces structured findings at three severity levels (Critical, Major, Minor) across six dimensions: correctness, security, reliability, readability, performance, maintainability.
-
-> Triggers: "review this", "check my code", "look at this PR", "what's wrong with this", "is this code good"
-
-**refactor-guide** — Produces a safe, sequenced refactor plan. Each step is independently verifiable and revertable. Covers six refactor types: extract, rename, flatten, split, replace pattern, consolidate. Always requires tests before any code changes.
-
-> Triggers: "refactor this", "clean this up", "this is a mess", "this function is too big", "split this up"
+| Skill | What it does | Say this to trigger it |
+|-------|-------------|----------------------|
+| **code-reviewer** | Structured review across correctness, security, reliability, readability, performance, maintainability. Three severity levels. | "review this", "check my code", "look at this PR", "is this code good" |
+| **refactor-guide** | Safe, sequenced refactor plan. Each step independently verifiable. Six types: extract, rename, flatten, split, replace, consolidate. | "refactor this", "clean this up", "this is a mess", "this function is too big" |
 
 ### Testing and debugging
 
-**test-writer** — Generates unit, integration, and edge-case tests. Infers the test framework from your repo. Covers happy paths, edge cases, error paths, and boundary conditions in Arrange/Act/Assert format.
-
-> Triggers: "write tests for this", "add test coverage", "test this function", "I need tests before refactoring"
-
-**debug-detective** — Systematically diagnoses bugs from error messages, stack traces, logs, or vague descriptions. Classifies bugs into five categories (runtime, logic, integration, concurrency, silent failure), forms ranked hypotheses, and confirms root cause before proposing a fix.
-
-> Triggers: "it's not working", "I'm getting an error", "this crashes", "why is this failing", "help me debug"
+| Skill | What it does | Say this to trigger it |
+|-------|-------------|----------------------|
+| **test-writer** | Unit, integration, and edge-case tests. Infers framework from repo. Covers happy paths, edge cases, error paths, boundaries. | "write tests for this", "add test coverage", "test this function" |
+| **debug-detective** | Systematic diagnosis from errors, stack traces, logs, or "it's broken". Five bug categories, ranked hypotheses, confirmed root cause before any fix. | "it's not working", "I'm getting an error", "this crashes", "help me debug" |
 
 ### Performance and security
 
-**perf-profiler** — Finds specific performance bottlenecks with evidence. Covers four domains: database/ORM (N+1, missing indexes), API/backend (blocking I/O, memory leaks), frontend/React (re-renders, bundle size), and network (over-fetching, missing compression).
-
-> Triggers: "this is slow", "queries are taking too long", "the page is sluggish", "bundle is too large", "memory keeps growing"
-
-**security-auditor** — Audits code across eight vectors: injection, auth/authz, secrets, input validation, data exposure, CSRF/XSS, dependencies, and monorepo-specific risks. Only reports findings with concrete exploitation paths.
-
-> Triggers: "security audit", "is this secure", "check for vulnerabilities", "audit this endpoint"
-
-**db-schema-reviewer** — Reviews schemas, migrations, and ORM models for missing indexes, unsafe migrations, nullable traps, naming issues, and lock risks. Knows the differences between Postgres, MySQL, and SQLite lock behaviour.
-
-> Triggers: "review this migration", "check my schema", "is this migration safe", "will this lock the table"
+| Skill | What it does | Say this to trigger it |
+|-------|-------------|----------------------|
+| **perf-profiler** | Finds specific bottlenecks with evidence. Database (N+1, indexes), API (blocking I/O, leaks), frontend (re-renders, bundles), network (over-fetching). | "this is slow", "queries are taking too long", "the page is sluggish" |
+| **security-auditor** | Audits across eight vectors: injection, auth, secrets, validation, data exposure, CSRF/XSS, deps, monorepo risks. Only concrete exploitation paths. | "security audit", "is this secure", "check for vulnerabilities" |
+| **db-schema-reviewer** | Reviews schemas, migrations, ORM models. Lock risk, missing indexes, nullable traps, naming conventions, ORM-specific risks. | "review this migration", "check my schema", "will this lock the table" |
 
 ### Documentation and workflow
 
-**doc-writer** — Writes READMEs, docstrings/JSDoc, API references, ADRs, changelogs, and inline comments. Matches existing style. Also runs in audit mode to find missing, outdated, or redundant documentation.
-
-> Triggers: "write a README", "document this", "add docstrings", "write a changelog", "document this API"
-
-**adr-writer** — Writes Architecture Decision Records. Captures context, options considered, rationale, and consequences. The most valuable part: what was rejected and why.
-
-> Triggers: "write an ADR", "document this decision", "we decided to use X", "why did we pick X over Y"
-
-**pr-describer** — Writes PR descriptions from diffs, commit logs, or plain descriptions. Covers what, why, how to test, and risks. Generates conventional-commit-format titles.
-
-> Triggers: "write a PR description", "PR for these changes", "help me describe this PR"
+| Skill | What it does | Say this to trigger it |
+|-------|-------------|----------------------|
+| **doc-writer** | READMEs, docstrings/JSDoc, API references, ADRs, changelogs. Matches existing style. Audit mode for finding gaps. | "write a README", "document this", "add docstrings", "write a changelog" |
+| **adr-writer** | Architecture Decision Records. Context, options, rationale, consequences. Most valuable part: what was rejected and why. | "write an ADR", "document this decision", "we decided to use X" |
+| **pr-describer** | PR descriptions from diffs, commits, or descriptions. What, why, how to test, risks. Conventional commit titles. | "write a PR description", "PR for these changes" |
 
 ### Planning and deployment
 
-**project-planner** — Turns any project description into a structured plan: goals, milestones, sprint breakdown, task list, and risk register. Works with rough descriptions, uploaded docs, or bullet points.
+| Skill | What it does | Say this to trigger it |
+|-------|-------------|----------------------|
+| **project-planner** | Project brief, SMART goals, milestones, sprint breakdown, task list, risk register. Works from rough descriptions. | "plan this project", "break this into tasks", "create a roadmap" |
+| **deploy-checklist** | Pre-deployment gates tailored to your stack. Six phases: code, config, database, feature flags, rollback plan, post-deploy verification. | "I'm about to deploy", "ready to ship", "deploying to production" |
 
-> Triggers: "plan this project", "break this into tasks", "create a roadmap", "help me scope this"
+---
 
-**deploy-checklist** — Generates a pre-deployment checklist tailored to your stack and environment. Six phases: code/build, config/secrets, database/migrations, feature flags, rollback plan, post-deploy verification. Includes stop conditions that block unsafe deploys.
+## Workflow recipes
 
-> Triggers: "I'm about to deploy", "pre-release checklist", "ready to ship", "deploying to production"
-
-## Common workflows
-
-### Building a feature end-to-end
-
-```
-1. /council-implement [describe the feature]     — plan and build
-2. /preflight                                     — check before committing
-3. "write a PR description"                       — pr-describer generates it
-```
-
-### Reviewing before merge
+### Ship a feature (full lifecycle)
 
 ```
-1. /council-review                                — five-role review
-2. "is this secure"                               — security-auditor deep dive
-3. "review this migration"                        — db-schema-reviewer if DB changes
+ ┌─────────────────────────────────────────────────────────────┐
+ │ 1. Plan                                                     │
+ │    "plan this project" → project-planner                    │
+ │                                                             │
+ │ 2. Build                                                    │
+ │    /council-implement [feature] → orchestrator dispatches   │
+ │    frontend + backend + shared + verifier + council-reviewer│
+ │                                                             │
+ │ 3. Review                                                   │
+ │    /council-review → 5-role quality gate                    │
+ │                                                             │
+ │ 4. Prepare                                                  │
+ │    "prepare this PR" → pr-packager (preflight + PR + deploy)│
+ │                                                             │
+ │ 5. Deploy                                                   │
+ │    "deploying to production" → deploy-checklist             │
+ │                                                             │
+ │ 6. Reflect                                                  │
+ │    /retro feature → lessons + skill gap report              │
+ └─────────────────────────────────────────────────────────────┘
 ```
 
-### Debugging a production issue
+### Fix a production bug
 
 ```
-1. "it's crashing with this error: [paste]"       — debug-detective investigates
-2. "write tests for the fix"                      — test-writer locks the fix
-3. /preflight                                     — sanity check
-4. /retro incident                                — post-incident review
+ "it's crashing with: [error]"  →  debug-detective
+              │
+ apply the fix
+              │
+ "write tests for the fix"     →  test-writer
+              │
+ /preflight                    →  pre-commit check
+              │
+ "prepare this PR"             →  pr-packager
+              │
+ /retro incident               →  post-incident review
 ```
 
-### Preparing a release
+### Improve code quality
 
 ```
-1. /council-review                                — final review
-2. "security audit on the auth changes"           — security-auditor
-3. "I'm deploying to production"                  — deploy-checklist
+ "check my schema"         →  db-schema-reviewer
+ "security audit"          →  security-auditor
+ "this is slow"            →  perf-profiler
+ "refactor this"           →  refactor-guide
+ "review this code"        →  code-reviewer
+ /council-review           →  full 5-role review
 ```
 
-### Improving the toolkit itself
+### Maintain the toolkit
 
 ```
-1. /retro sprint                                  — identifies skill gaps
-2. /skill-check [new or edited skill]             — validates before commit
-3. /skill-override [skill] "[preference]"         — persistent customisation
+ /retro sprint                        →  identifies skill gaps
+ /skill-check [new skill]             →  validates before commit
+ /skill-override [skill] "[rule]"     →  persistent customisation
 ```
 
-## How skills and commands relate
-
-Commands orchestrate multi-step processes and often invoke skills internally:
-
-- `/council-implement` uses **test-writer**, **doc-writer**, **code-reviewer**, and **council-review** during its phases
-- `/council-review` applies the same severity framework as **code-reviewer** and **security-auditor**
-- `/retro` produces a skill gap report that feeds back into improving the skills themselves
-- `/preflight` can escalate to `/council-review` for deeper analysis
-
-Skills are focused specialists. Commands are workflows that coordinate them.
-
-## Customising behaviour
-
-Use `/skill-override` to adapt any skill to your team's conventions without editing the skill files directly:
-
-```
-/skill-override test-writer "we use Vitest, never Jest"
-/skill-override code-reviewer "always prefer const over let"
-/skill-override deploy-checklist "skip the feature flag section"
-/skill-override project-planner "default sprint = 1 week"
-/skill-override perf-profiler "we use Prisma, not raw SQL"
-```
-
-Overrides are tracked, versioned, and reversible. Run `/skill-override [skill] list` to see active overrides.
+---
 
 ## Project structure
 
 ```
 .claude/
-├── commands/
-│   ├── council-implement.md    — multi-agent build orchestration
-│   ├── council-review.md       — five-role code review
-│   ├── preflight.md            — pre-commit sanity check
-│   ├── retro.md                — structured retrospectives
-│   ├── skill-check.md          — skill file validation
-│   └── skill-override.md       — persistent skill customisation
-└── skills/
-    ├── adr-writer/             — architecture decision records
-    ├── code-reviewer/          — structured code review
-    ├── db-schema-reviewer/     — schema and migration review
-    ├── debug-detective/        — systematic bug diagnosis
-    ├── deploy-checklist/       — pre-deployment gates
-    ├── doc-writer/             — developer documentation
-    ├── pref-profiler/          — performance bottleneck analysis
-    ├── pr-describer/           — pull request descriptions
-    ├── project-planner/        — project planning and scoping
-    ├── refactor-guide.md/      — safe refactoring plans
-    ├── security-auditor/       — security vulnerability audit
-    └── test-writer/            — test generation
+├── commands/                          ← slash commands
+│   ├── council-implement.md           multi-agent build workflow
+│   ├── council-review.md              5-role quality review
+│   ├── preflight.md                   pre-commit sanity check
+│   ├── retro.md                       structured retrospectives
+│   ├── skill-check.md                 skill file validation
+│   └── skill-override.md              persistent skill customisation
+└── skills/                            ← auto-triggering skills
+    ├── adr-writer/SKILL.md            architecture decision records
+    ├── code-reviewer/SKILL.md         structured code review
+    ├── db-schema-reviewer/SKILL.md    schema and migration review
+    ├── debug-detective/SKILL.md       systematic bug diagnosis
+    ├── deploy-checklist/SKILL.md      pre-deployment gates
+    ├── doc-writer/SKILL.md            developer documentation
+    ├── pref-profiler/SKILL.md         performance bottleneck analysis
+    ├── pr-describer/SKILL.md          pull request descriptions
+    ├── project-planner/SKILL.md       project planning and scoping
+    ├── refactor-guide.md/SKILL.md     safe refactoring plans
+    ├── security-auditor/SKILL.md      security vulnerability audit
+    └── test-writer/SKILL.md           test generation
+
+.cursor/
+└── agents/                            ← specialist agent roles
+    ├── orchestrator.md                master coordinator
+    ├── frontend-engineer.md           React/Next.js implementation
+    ├── backend-engineer.md            API, services, DB
+    ├── shared-engineer.md             shared types and utilities
+    ├── verifier.md                    type check, lint, test, build
+    ├── council-reviewer.md            5-role quality gate
+    ├── qa-lead.md                     test coverage specialist
+    ├── security-reviewer.md           security review (read-only)
+    ├── context-generator.md           project memory (.context/)
+    ├── debt-tracker.md                tech debt register
+    ├── pr-packager.md                 PR preparation
+    └── onboarding-guide.md            new developer guide
 ```

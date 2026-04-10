@@ -1,0 +1,37 @@
+#!/bin/bash
+
+# Pre-commit hook: syncs graph.json when .claude/ or .cursor/ files change.
+# Install: git config core.hooksPath .githooks
+
+STAGED=$(git diff --cached --name-only --diff-filter=ACDMR)
+
+CONTENT_CHANGED=false
+for file in $STAGED; do
+  case "$file" in
+    .claude/skills/*|.claude/commands/*|.cursor/agents/*)
+      CONTENT_CHANGED=true
+      break
+      ;;
+  esac
+done
+
+if [ "$CONTENT_CHANGED" = false ]; then
+  exit 0
+fi
+
+echo "🔄 .claude/ or .cursor/ files changed — running graph sync..."
+
+node scripts/sync-graph.mjs
+SYNC_EXIT=$?
+
+if [ $SYNC_EXIT -ne 0 ]; then
+  echo "❌ sync-graph.mjs failed"
+  exit 1
+fi
+
+if git diff --quiet public/graph.json 2>/dev/null; then
+  exit 0
+fi
+
+echo "📦 graph.json updated — staging it"
+git add public/graph.json

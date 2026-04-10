@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "sync": "node scripts/sync-graph.mjs",
+    "sync:check": "node scripts/sync-graph.mjs --check"
   },
   "dependencies": {
     "@xyflow/react": "^12.10.2",

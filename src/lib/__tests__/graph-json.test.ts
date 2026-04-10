@@ -12,15 +12,15 @@ describe("public/graph.json", () => {
     expect(Array.isArray(data.edges)).toBe(true);
   });
 
-  it("contains the expected number of entities (12 skills, 13 agents, 6 commands)", () => {
+  it("contains the expected number of entities (13 skills, 13 agents, 6 commands)", () => {
     const skills = data.entities.filter((e) => e.entityType === "skill");
     const agents = data.entities.filter((e) => e.entityType === "agent");
     const commands = data.entities.filter((e) => e.entityType === "command");
 
-    expect(skills).toHaveLength(12);
+    expect(skills).toHaveLength(13);
     expect(agents).toHaveLength(13);
     expect(commands).toHaveLength(6);
-    expect(data.entities).toHaveLength(31);
+    expect(data.entities).toHaveLength(32);
   });
 
   it("every entity has a unique id", () => {

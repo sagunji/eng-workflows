@@ -11,10 +11,6 @@ vi.mock("@/lib/graph-layout", async (importOriginal) => {
   };
 });
 
-vi.mock("@/hooks/use-force-layout", () => ({
-  default: () => ({ start: undefined, drag: undefined, stop: undefined }),
-}));
-
 import { elkLayout } from "@/lib/graph-layout";
 
 function makeSkill(id: string, name: string): GraphEntity {

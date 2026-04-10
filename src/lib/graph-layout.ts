@@ -2,6 +2,7 @@ import type { Edge, Node } from "@xyflow/react";
 import type { ElkNode } from "elkjs/lib/elk-api";
 import ELK from "elkjs/lib/elk.bundled.js";
 import type {
+  EntityType,
   GraphData,
   GraphEntity,
   GraphEdge as GEdge,
@@ -15,10 +16,11 @@ const CMD_WIDTH = 220;
 
 const LAYOUT_OPTIONS = {
   "elk.algorithm": "stress",
-  "elk.stress.desiredEdgeLength": "280",
-  "elk.spacing.nodeNode": "120",
+  "elk.stress.desiredEdgeLength": "420",
+  "elk.stress.epsilon": "0.001",
+  "elk.spacing.nodeNode": "180",
   "elk.separateConnectedComponents": "true",
-  "elk.spacing.componentComponent": "180",
+  "elk.spacing.componentComponent": "300",
 } as const;
 
 function nodeType(entity: GraphEntity): string {
@@ -31,7 +33,8 @@ function nodeWidth(entity: GraphEntity): number {
   return entity.entityType === "command" ? CMD_WIDTH : NODE_WIDTH;
 }
 
-function edgeStyle(sourceType: string, targetType: string) {
+/** Stroke styles by graph edge type pair (used for layout edges and focus highlighting). */
+export function edgeStyle(sourceType: string, targetType: string) {
   if (sourceType === "agent" && targetType === "agent") {
     return { stroke: "#8b5cf6", strokeWidth: 2, strokeDasharray: "6 3" };
   }
@@ -51,6 +54,14 @@ function edgeStyle(sourceType: string, targetType: string) {
     return { stroke: "#6b7280", strokeWidth: 1.5 };
   }
   return { stroke: "#6b7280", strokeWidth: 1.5 };
+}
+
+/** React Flow edge `data` for progressive disclosure (labels + animation flags). */
+export interface SkillFlowEdgeData extends Record<string, unknown> {
+  label: string;
+  sourceType: EntityType;
+  targetType: EntityType;
+  isAgentAgent: boolean;
 }
 
 /**
@@ -104,7 +115,7 @@ export function buildFlowEdges(
   graphEdges: GEdge[],
   entityIds: Set<string>,
   nodePositions?: Map<string, { x: number; y: number; w: number; h: number }>,
-): Edge[] {
+): Edge<SkillFlowEdgeData>[] {
   return graphEdges
     .filter((e) => entityIds.has(e.sourceId) && entityIds.has(e.targetId))
     .map((e) => {
@@ -116,26 +127,30 @@ export function buildFlowEdges(
           handles = pickHandles(sp.x, sp.y, sp.w, sp.h, tp.x, tp.y, tp.w, tp.h);
         }
       }
+      const baseStroke = edgeStyle(e.sourceType, e.targetType);
       return {
         id: e.id,
         source: e.sourceId,
         target: e.targetId,
         sourceHandle: handles.sourceHandle,
         targetHandle: handles.targetHandle,
-        label: e.label,
-        type: "smoothstep",
-        animated: e.sourceType === "agent" && e.targetType === "agent",
-        style: edgeStyle(e.sourceType, e.targetType),
-        labelStyle: { fill: "#d1d5db", fontSize: 10, fontWeight: 500 },
-        labelBgStyle: { fill: "#030712", fillOpacity: 0.92 },
-        labelBgPadding: [3, 5] as [number, number],
+        type: "default",
+        animated: false,
+        className: "skillflow-edge",
+        style: { ...baseStroke, opacity: 0.15, strokeWidth: 1 },
+        data: {
+          label: e.label,
+          sourceType: e.sourceType,
+          targetType: e.targetType,
+          isAgentAgent: e.sourceType === "agent" && e.targetType === "agent",
+        },
       };
     });
 }
 
 export interface ElkLayoutResult {
   nodes: Node[];
-  edges: Edge[];
+  edges: Edge<SkillFlowEdgeData>[];
 }
 
 export async function elkLayout(data: GraphData): Promise<ElkLayoutResult> {

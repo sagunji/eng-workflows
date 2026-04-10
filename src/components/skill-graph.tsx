@@ -2,25 +2,107 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
+  applyEdgeChanges,
   Background,
   BackgroundVariant,
   Controls,
   MiniMap,
   ReactFlow,
   ReactFlowProvider,
-  useEdgesState,
   useNodesState,
   useReactFlow,
   type Edge,
+  type EdgeChange,
   type Node,
   type NodeMouseHandler,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 
 import { SkillNode, AgentNode, CommandNode } from "@/components/graph-nodes";
-import { elkLayout } from "@/lib/graph-layout";
-import useForceLayout from "@/hooks/use-force-layout";
+import {
+  edgeStyle,
+  elkLayout,
+  type SkillFlowEdgeData,
+} from "@/lib/graph-layout";
 import type { EntityType, GraphData, GraphEntity } from "@/types/graph";
+
+const FLOW_EDGE_LABEL_STYLE = {
+  fill: "#d1d5db",
+  fontSize: 10,
+  fontWeight: 500,
+} as const;
+
+const FLOW_EDGE_LABEL_BG_STYLE = {
+  fill: "#030712",
+  fillOpacity: 0.92,
+} as const;
+
+const FLOW_EDGE_LABEL_BG_PADDING: [number, number] = [3, 5];
+
+const BASELINE_EDGE_OPACITY = 0.25;
+const DIMMED_EDGE_OPACITY = 0.15;
+
+type LayoutEdge = Edge<SkillFlowEdgeData>;
+
+/**
+ * Applies progressive disclosure: baseline / dimmed vs focused incident edges with labels.
+ */
+function edgesForFocusNode(
+  baseEdges: LayoutEdge[],
+  focusNodeId: string | null,
+): Edge[] {
+  return baseEdges.map((edge) => {
+    const data = edge.data;
+    const baseStroke = edgeStyle(data.sourceType, data.targetType);
+    const isIncident =
+      focusNodeId !== null &&
+      (edge.source === focusNodeId || edge.target === focusNodeId);
+
+    if (focusNodeId === null) {
+      return {
+        ...edge,
+        label: undefined,
+        labelStyle: undefined,
+        labelBgStyle: undefined,
+        labelBgPadding: undefined,
+        animated: false,
+        zIndex: undefined,
+        className: "skillflow-edge",
+        style: { ...baseStroke, opacity: BASELINE_EDGE_OPACITY, strokeWidth: 1 },
+      };
+    }
+
+    if (isIncident) {
+      return {
+        ...edge,
+        label: data.label,
+        labelStyle: { ...FLOW_EDGE_LABEL_STYLE },
+        labelBgStyle: { ...FLOW_EDGE_LABEL_BG_STYLE },
+        labelBgPadding: FLOW_EDGE_LABEL_BG_PADDING,
+        animated: data.isAgentAgent,
+        zIndex: 1,
+        className: "skillflow-edge skillflow-edge--highlight",
+        style: { ...baseStroke, opacity: 1 },
+      };
+    }
+
+    return {
+      ...edge,
+      label: undefined,
+      labelStyle: undefined,
+      labelBgStyle: undefined,
+      labelBgPadding: undefined,
+      animated: false,
+      zIndex: undefined,
+      className: "skillflow-edge",
+      style: {
+        ...baseStroke,
+        opacity: DIMMED_EDGE_OPACITY,
+        strokeWidth: 1,
+      },
+    };
+  });
+}
 
 const nodeTypes = {
   skillNode: SkillNode,
@@ -44,7 +126,10 @@ export interface GraphFilter {
 export interface SkillGraphProps {
   data: GraphData;
   filter?: GraphFilter;
-  onNodeClick?: (entity: GraphEntity) => void;
+  /** Pass `null` when the same node is clicked again to close the detail panel. */
+  onNodeClick?: (entity: GraphEntity | null) => void;
+  /** Sync selection when the detail panel closes or opens outside the graph. */
+  selectedEntityId?: string | null;
 }
 
 export function applyGraphFilter(
@@ -81,17 +166,40 @@ export function applyGraphFilter(
   return { entities, edges };
 }
 
-function SkillGraphCanvas({ data, filter, onNodeClick }: SkillGraphProps) {
+function SkillGraphCanvas({
+  data,
+  filter,
+  onNodeClick,
+  selectedEntityId,
+}: SkillGraphProps) {
   const { fitView } = useReactFlow();
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
-  const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
+  const [baseEdges, setBaseEdges] = useState<LayoutEdge[]>([]);
+  const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null);
+  const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const [layoutPending, setLayoutPending] = useState(false);
 
-  const dragEvents = useForceLayout({
-    strength: -1400,
-    distance: 200,
-    collideRadius: 140,
-  });
+  useEffect(() => {
+    if (selectedEntityId === null) {
+      setSelectedNodeId(null);
+    } else {
+      setSelectedNodeId(selectedEntityId);
+    }
+  }, [selectedEntityId]);
+
+  const focusNodeId = useMemo(
+    () => hoveredNodeId ?? selectedNodeId,
+    [hoveredNodeId, selectedNodeId],
+  );
+
+  const edges = useMemo(
+    () => edgesForFocusNode(baseEdges, focusNodeId),
+    [baseEdges, focusNodeId],
+  );
+
+  const onEdgesChange = useCallback((changes: EdgeChange<LayoutEdge>[]) => {
+    setBaseEdges((eds) => applyEdgeChanges(changes, eds));
+  }, []);
 
   const layoutData = useMemo(() => {
     if (!filter) return data;
@@ -104,7 +212,7 @@ function SkillGraphCanvas({ data, filter, onNodeClick }: SkillGraphProps) {
     async function runLayout() {
       if (layoutData.entities.length === 0) {
         setNodes([]);
-        setEdges([]);
+        setBaseEdges([]);
         return;
       }
 
@@ -113,13 +221,13 @@ function SkillGraphCanvas({ data, filter, onNodeClick }: SkillGraphProps) {
         const result = await elkLayout(layoutData);
         if (!cancelled) {
           setNodes(result.nodes);
-          setEdges(result.edges);
+          setBaseEdges(result.edges);
         }
       } catch (err) {
         console.error("ELK layout failed", err);
         if (!cancelled) {
           setNodes([]);
-          setEdges([]);
+          setBaseEdges([]);
         }
       } finally {
         if (!cancelled) setLayoutPending(false);
@@ -130,7 +238,7 @@ function SkillGraphCanvas({ data, filter, onNodeClick }: SkillGraphProps) {
     return () => {
       cancelled = true;
     };
-  }, [layoutData, setEdges, setNodes]);
+  }, [layoutData, setNodes]);
 
   useEffect(() => {
     if (layoutPending || nodes.length === 0) return;
@@ -143,10 +251,30 @@ function SkillGraphCanvas({ data, filter, onNodeClick }: SkillGraphProps) {
   const handleNodeClick = useCallback<NodeMouseHandler>(
     (_event, node) => {
       const entity = (node.data as { entity?: GraphEntity })?.entity;
-      if (entity && onNodeClick) onNodeClick(entity);
+      if (!entity || !onNodeClick) return;
+
+      if (selectedNodeId === node.id) {
+        setSelectedNodeId(null);
+        onNodeClick(null);
+        return;
+      }
+
+      setSelectedNodeId(node.id);
+      onNodeClick(entity);
     },
-    [onNodeClick],
+    [onNodeClick, selectedNodeId],
   );
+
+  const handleNodeMouseEnter = useCallback<NodeMouseHandler>(
+    (_event, node) => {
+      setHoveredNodeId(node.id);
+    },
+    [],
+  );
+
+  const handleNodeMouseLeave = useCallback<NodeMouseHandler>(() => {
+    setHoveredNodeId(null);
+  }, []);
 
   return (
     <div className="relative h-full w-full bg-gray-950">
@@ -168,17 +296,16 @@ function SkillGraphCanvas({ data, filter, onNodeClick }: SkillGraphProps) {
         edges={edges}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
-        onNodeDragStart={dragEvents.start}
-        onNodeDrag={dragEvents.drag}
-        onNodeDragStop={dragEvents.stop}
         nodeTypes={nodeTypes}
         onNodeClick={handleNodeClick}
+        onNodeMouseEnter={handleNodeMouseEnter}
+        onNodeMouseLeave={handleNodeMouseLeave}
         colorMode="dark"
         fitView
         fitViewOptions={FIT_VIEW_OPTIONS}
         minZoom={0.08}
         proOptions={{ hideAttribution: true }}
-        defaultEdgeOptions={{ type: "smoothstep" }}
+        defaultEdgeOptions={{ type: "default" }}
       >
         <Background
           id="skillflow-dots"

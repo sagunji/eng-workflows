@@ -31,9 +31,6 @@ You never write code yourself. You plan, delegate, track, and consolidate.
 | `shared-engineer` | Shared types, utils, constants | Cross-boundary types — always last |
 | `verifier` | Type check, lint, tests, smoke | After every engineer agent |
 | `council-reviewer` | 5-role quality gate | After verifier passes |
-| `qa-lead` | Deep test-coverage audit, writes missing tests | When test quality is the primary concern or council QA role flags issues |
-| `security-reviewer` | Deep security audit, traces exploit paths | When security is the primary concern or council Security role flags issues |
-| `secret-guard` | Pre-commit secret/credential scanner | Before every commit, before consolidation phase |
 | `context-generator` | Updates .context/PROJECT.md | After work is complete |
 | `debt-tracker` | Scans for tech debt | Before planning if requested |
 | `pr-packager` | PR description + deploy checklist | When work is ready to merge |
@@ -67,6 +64,30 @@ Then determine:
 - **Dependencies** — which subtasks must complete before others can start?
 - **Risk** — does this touch auth, payments, migrations, or the shared package?
 - **Debt relevance** — does this task overlap with any known debt items?
+
+---
+
+## Phase 1b — Consult architecture-advisor
+
+Before building the plan, consult `architecture-advisor` if the task:
+- Adds a new module, service, or package
+- Crosses a layer boundary (frontend ↔ backend ↔ shared)
+- Touches the shared package
+- Changes a public API contract
+- Involves a new DB table or migration
+
+Pass the architecture-advisor:
+- The task description
+- The proposed approach (rough)
+- The files likely to be touched
+
+Integrate its advisory before presenting the plan:
+- Any 🔴 violations → resolve in the plan before presenting
+- Any ⚠️ concerns → include in the plan's Flags section
+- Any ADR recommendations → include in the plan as pre-implementation steps
+- Any placement corrections → update proposed file locations
+
+For simple tasks (single file, no boundary crossing) → skip this step.
 
 ---
 
@@ -193,18 +214,15 @@ immediately rather than silently.
 
 After all implementation agents complete and verifier has passed for each:
 
-1. **Invoke `secret-guard`** on all staged changes before consolidation.
-   If it returns BLOCK or REVIEW, stop and surface findings to the user.
-
-2. **Review all changes together** as orchestrator — check for:
+1. **Review all changes together** as orchestrator — check for:
    - Duplicated logic written independently by different agents
    - Inconsistent naming across FE and BE implementations
    - Shared types that should move to the shared package
    - Contracts that drifted from what was agreed in Phase 2
 
-3. **Invoke shared-engineer** if consolidation requires shared package changes
+2. **Invoke shared-engineer** if consolidation requires shared package changes
 
-4. **Re-run verifier** after any consolidation changes
+3. **Re-run verifier** after any consolidation changes
 
 ---
 
@@ -298,7 +316,7 @@ Is it backend only?
     NO  ↓
 Is it fullstack?
     YES → agree contracts → parallel FE + BE → verifier each
-        → secret-guard → consolidate → shared-engineer if needed
+        → consolidate → shared-engineer if needed
         → verifier → council-reviewer
     NO  ↓
 Is it a refactor?
@@ -308,22 +326,8 @@ Is it a refactor?
 Is it a debt item?
     YES → read debt-tracker output → route to appropriate agent
     NO  ↓
-Is it a test coverage audit?
-    YES → qa-lead (standalone deep pass)
-    NO  ↓
-Is it a security review?
-    YES → security-reviewer (standalone deep pass)
-    NO  ↓
 Clarify with user — task is ambiguous
 ```
-
-### Escalation from council to standalone reviewers
-
-After council-reviewer returns a verdict:
-- If **QA Lead role** returns ⚠️ or 🚨 → consider invoking `qa-lead`
-  standalone for a deeper test-coverage audit and to write missing tests
-- If **Security role** returns ⚠️ or 🚨 → consider invoking
-  `security-reviewer` standalone for end-to-end exploit path tracing
 
 ---
 

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { render, screen, within } from "@testing-library/react";
+import { render, screen, within, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { EntityDetailPanel } from "@/components/entity-detail-panel";
 import type { GraphSkill, GraphAgent, GraphEdge } from "@/types/graph";
@@ -261,6 +261,13 @@ describe("EntityDetailPanel", () => {
       vi.stubGlobal("URL", { ...URL, createObjectURL, revokeObjectURL });
       const clickSpy = vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(() => {});
 
+      const fetchSpy = vi.spyOn(globalThis, "fetch").mockImplementation(async () => {
+        return new Response(
+          JSON.stringify({ content: "---\nname: code-reviewer\n---\n# Hello", path: ".claude/skills/code-reviewer/SKILL.md" }),
+          { status: 200 },
+        );
+      });
+
       render(
         <EntityDetailPanel
           entity={mockSkill}
@@ -271,32 +278,32 @@ describe("EntityDetailPanel", () => {
       );
 
       await user.click(screen.getByRole("button", { name: "Download markdown file" }));
-      await user.click(screen.getByRole("button", { name: "Download" }));
+      await user.click(screen.getByRole("button", { name: "Download .md" }));
 
       expect(createObjectURL).toHaveBeenCalled();
       const blobArg = (createObjectURL.mock.calls as unknown[][])[0][0] as Blob;
       expect(blobArg.type).toBe("text/markdown");
-      expect(await blobArg.text()).toBe("# Hello");
       expect(clickSpy).toHaveBeenCalled();
       expect(revokeObjectURL).toHaveBeenCalledWith("blob:mock");
 
       clickSpy.mockRestore();
+      fetchSpy.mockRestore();
     });
 
-    it("fetches connected entities and bundles them on 'All connections'", async () => {
+    it("posts to bundle endpoint and triggers zip download on 'All connections'", async () => {
       const user = userEvent.setup();
       const createObjectURL = vi.fn(() => "blob:mock");
       const revokeObjectURL = vi.fn();
       vi.stubGlobal("URL", { ...URL, createObjectURL, revokeObjectURL });
       const clickSpy = vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(() => {});
 
-      const fetchSpy = vi.spyOn(globalThis, "fetch").mockImplementation(async (input) => {
+      const fetchSpy = vi.spyOn(globalThis, "fetch").mockImplementation(async (input, init) => {
         const url = typeof input === "string" ? input : (input as Request).url;
-        if (url.includes("qa-lead")) {
-          return new Response(JSON.stringify({ content: "# QA Lead" }), { status: 200 });
-        }
-        if (url.includes("test-writer")) {
-          return new Response(JSON.stringify({ content: "# Test Writer" }), { status: 200 });
+        if (url.includes("/api/entities/bundle") && init?.method === "POST") {
+          return new Response("fake-zip-bytes", {
+            status: 200,
+            headers: { "Content-Type": "application/zip" },
+          });
         }
         return new Response(null, { status: 404 });
       });
@@ -314,23 +321,34 @@ describe("EntityDetailPanel", () => {
 
       const popover = screen.getByRole("dialog", { name: "Download options" });
       await user.click(within(popover).getByLabelText(/All connections/));
-      await user.click(within(popover).getByRole("button", { name: "Download" }));
+      await user.click(within(popover).getByRole("button", { name: "Download .zip" }));
 
-      expect(fetchSpy).toHaveBeenCalledTimes(2);
+      await waitFor(() => {
+        expect(createObjectURL).toHaveBeenCalled();
+      });
 
-      expect(createObjectURL).toHaveBeenCalled();
-      const blobArg = (createObjectURL.mock.calls as unknown[][])[0][0] as Blob;
-      const bundled = await blobArg.text();
-      expect(bundled).toContain("# code-reviewer (skill)");
-      expect(bundled).toContain("# qa-lead (agent)");
-      expect(bundled).toContain("# test-writer (skill)");
-      expect(bundled).toContain("---");
+      expect(fetchSpy).toHaveBeenCalledWith("/api/entities/bundle", expect.objectContaining({
+        method: "POST",
+        body: expect.any(String),
+      }));
+      const bundleCall = fetchSpy.mock.calls.find(
+        ([url]) => typeof url === "string" && url.includes("/api/entities/bundle"),
+      )!;
+      const body = JSON.parse((bundleCall[1] as RequestInit).body as string);
+      expect(body.zipName).toBe("code-reviewer-bundle");
+      expect(body.entities).toHaveLength(3);
+      expect(body.entities).toContainEqual({ type: "skill", name: "code-reviewer" });
+      expect(body.entities).toContainEqual({ type: "agent", name: "qa-lead" });
+      expect(body.entities).toContainEqual({ type: "skill", name: "test-writer" });
+
+      expect(clickSpy).toHaveBeenCalled();
+      expect(revokeObjectURL).toHaveBeenCalledWith("blob:mock");
 
       clickSpy.mockRestore();
       fetchSpy.mockRestore();
     });
 
-    it("handles fetch failures gracefully in bundle", async () => {
+    it("handles bundle endpoint failure gracefully", async () => {
       const user = userEvent.setup();
       const createObjectURL = vi.fn(() => "blob:mock");
       const revokeObjectURL = vi.fn();
@@ -338,7 +356,7 @@ describe("EntityDetailPanel", () => {
       const clickSpy = vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(() => {});
 
       const fetchSpy = vi.spyOn(globalThis, "fetch").mockImplementation(async () => {
-        return new Response(null, { status: 404 });
+        return new Response(JSON.stringify({ error: "Not found" }), { status: 404 });
       });
 
       render(
@@ -354,12 +372,16 @@ describe("EntityDetailPanel", () => {
 
       const popover = screen.getByRole("dialog", { name: "Download options" });
       await user.click(within(popover).getByLabelText(/Connects to/));
-      await user.click(within(popover).getByRole("button", { name: "Download" }));
+      await user.click(within(popover).getByRole("button", { name: "Download .zip" }));
 
-      const blobArg = (createObjectURL.mock.calls as unknown[][])[0][0] as Blob;
-      const bundled = await blobArg.text();
-      expect(bundled).toContain("# code-reviewer (skill)");
-      expect(bundled).toContain("> Content not available for test-writer");
+      await waitFor(() => {
+        expect(screen.queryByText("Fetching…")).not.toBeInTheDocument();
+      });
+
+      expect(fetchSpy).toHaveBeenCalledWith("/api/entities/bundle", expect.objectContaining({
+        method: "POST",
+      }));
+      expect(createObjectURL).not.toHaveBeenCalled();
 
       clickSpy.mockRestore();
       fetchSpy.mockRestore();

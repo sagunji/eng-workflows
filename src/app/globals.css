@@ -154,3 +154,16 @@ body {
 .prose-dark > *:first-child {
   margin-top: 0;
 }
+
+/* Skill graph: smooth edge opacity / stroke transitions */
+.react-flow__edge.skillflow-edge .react-flow__edge-path {
+  transition:
+    opacity 0.2s ease,
+    stroke 0.2s ease,
+    stroke-width 0.2s ease,
+    stroke-dasharray 0.2s ease;
+}
+
+.react-flow__edge.skillflow-edge--highlight .react-flow__edge-path {
+  filter: drop-shadow(0 0 3px color-mix(in srgb, currentColor 45%, transparent));
+}

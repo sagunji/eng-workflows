@@ -4,8 +4,11 @@ import Link from "next/link";
 import { useCallback, useMemo, useState } from "react";
 import { EntityCard, AGENT_ROLE_FILTER_TABS } from "@/components/entity-card";
 import { EntityDetailPanel } from "@/components/entity-detail-panel";
+import { SiteFooter } from "@/components/site-footer";
 import { useGraphData } from "@/hooks/use-graph-data";
 import type { GraphEntity } from "@/types/graph";
+
+const GITHUB_URL = "https://github.com/sagunji/eng-workflows";
 
 const ENTITY_TYPE_TABS: {
   id: "all" | "skill" | "agent" | "command";
@@ -28,6 +31,7 @@ const SKILL_CATEGORY_TABS: { id: string; label: string }[] = [
   { id: "performance", label: "Performance" },
   { id: "security", label: "Security" },
   { id: "database", label: "Database" },
+  { id: "architecture", label: "Architecture" },
 ];
 
 function entityCardSkeleton(kind: "skill" | "agent" | "command") {
@@ -173,9 +177,21 @@ export default function DashboardPage() {
       <header className="sticky top-0 z-30 border-b border-gray-800/80 bg-gray-950/90 backdrop-blur-md">
         <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between gap-4">
-            <h1 className="text-xl font-semibold tracking-tight text-white">
+            <Link href="/" className="text-xl font-semibold tracking-tight text-white hover:text-gray-200 transition-colors">
               SkillFlow
-            </h1>
+            </Link>
+            <a
+              href={GITHUB_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs text-gray-400 transition-colors hover:bg-gray-800 hover:text-white"
+              aria-label="View source on GitHub"
+            >
+              <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2Z" />
+              </svg>
+              <span className="hidden sm:inline">Source</span>
+            </a>
           </div>
 
           <nav
@@ -205,6 +221,25 @@ export default function DashboardPage() {
       </header>
 
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        <div className="mb-6 rounded-xl border border-gray-800/80 bg-gray-900/40 px-4 py-3">
+          <p className="text-sm leading-relaxed text-gray-400">
+            You&apos;re exploring the live workflow graph from the{" "}
+            <a
+              href={GITHUB_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-medium text-gray-200 underline decoration-gray-600 underline-offset-2 transition-colors hover:text-white hover:decoration-gray-400"
+            >
+              eng-workflows
+            </a>{" "}
+            project. Each card is an actual skill, agent, or command defined in the repo&apos;s{" "}
+            <code className="rounded bg-gray-800 px-1.5 py-0.5 text-xs text-gray-300">.claude/</code>{" "}
+            and{" "}
+            <code className="rounded bg-gray-800 px-1.5 py-0.5 text-xs text-gray-300">.cursor/</code>{" "}
+            directories. Click any card to read its source and download it.
+          </p>
+        </div>
+
         <div
           className="-mx-1 flex gap-2 overflow-x-auto pb-2"
           role="tablist"
@@ -318,6 +353,8 @@ export default function DashboardPage() {
           </p>
         )}
       </main>
+
+      <SiteFooter />
 
       <EntityDetailPanel
         entity={selectedEntity}

@@ -5,7 +5,11 @@
       "entityType": "skill",
       "name": "project-planner",
       "description": "Structures and plans any software project from scratch",
-      "triggers": ["plan this project", "create a roadmap", "break this into tasks"],
+      "triggers": [
+        "plan this project",
+        "create a roadmap",
+        "break this into tasks"
+      ],
       "category": "planning"
     },
     {
@@ -13,7 +17,11 @@
       "entityType": "skill",
       "name": "code-reviewer",
       "description": "Reviews code for logic bugs, style issues, and anti-patterns",
-      "triggers": ["review this", "check my code", "look at this PR"],
+      "triggers": [
+        "review this",
+        "check my code",
+        "look at this PR"
+      ],
       "category": "quality"
     },
     {
@@ -21,7 +29,11 @@
       "entityType": "skill",
       "name": "debug-detective",
       "description": "Systematically diagnoses bugs and unexpected behaviour",
-      "triggers": ["it's not working", "help me debug", "why is this failing"],
+      "triggers": [
+        "it's not working",
+        "help me debug",
+        "why is this failing"
+      ],
       "category": "debugging"
     },
     {
@@ -29,7 +41,11 @@
       "entityType": "skill",
       "name": "test-writer",
       "description": "Generates unit, integration, and edge-case tests",
-      "triggers": ["write tests for this", "add test coverage", "unit tests"],
+      "triggers": [
+        "write tests for this",
+        "add test coverage",
+        "unit tests"
+      ],
       "category": "testing"
     },
     {
@@ -37,7 +53,11 @@
       "entityType": "skill",
       "name": "doc-writer",
       "description": "Writes developer documentation: READMEs, docstrings, API refs",
-      "triggers": ["write a README", "document this API", "add docstrings"],
+      "triggers": [
+        "write a README",
+        "document this API",
+        "add docstrings"
+      ],
       "category": "documentation"
     },
     {
@@ -45,7 +65,11 @@
       "entityType": "skill",
       "name": "deploy-checklist",
       "description": "Generates pre-deployment checklists tailored to the stack",
-      "triggers": ["pre-release checklist", "deploying to production", "ready to ship"],
+      "triggers": [
+        "pre-release checklist",
+        "deploying to production",
+        "ready to ship"
+      ],
       "category": "operations"
     },
     {
@@ -53,7 +77,11 @@
       "entityType": "skill",
       "name": "pr-describer",
       "description": "Writes clear PR descriptions from diffs or commit logs",
-      "triggers": ["write a PR description", "describe this PR", "pull request summary"],
+      "triggers": [
+        "write a PR description",
+        "describe this PR",
+        "pull request summary"
+      ],
       "category": "documentation"
     },
     {
@@ -61,7 +89,11 @@
       "entityType": "skill",
       "name": "adr-writer",
       "description": "Writes Architecture Decision Records for technical decisions",
-      "triggers": ["write an ADR", "document this decision", "architecture decision"],
+      "triggers": [
+        "write an ADR",
+        "document this decision",
+        "architecture decision"
+      ],
       "category": "documentation"
     },
     {
@@ -69,7 +101,11 @@
       "entityType": "skill",
       "name": "refactor-guide",
       "description": "Produces safe, sequenced plans for refactoring code",
-      "triggers": ["refactor this", "clean this up", "how do I restructure this"],
+      "triggers": [
+        "refactor this",
+        "clean this up",
+        "how do I restructure this"
+      ],
       "category": "quality"
     },
     {
@@ -77,7 +113,11 @@
       "entityType": "skill",
       "name": "perf-profiler",
       "description": "Identifies performance bottlenecks in frontend and backend",
-      "triggers": ["this is slow", "performance is bad", "page is sluggish"],
+      "triggers": [
+        "this is slow",
+        "performance is bad",
+        "page is sluggish"
+      ],
       "category": "performance"
     },
     {
@@ -85,7 +125,11 @@
       "entityType": "skill",
       "name": "security-auditor",
       "description": "Audits code for security vulnerabilities and OWASP issues",
-      "triggers": ["security audit", "is this secure", "check for vulnerabilities"],
+      "triggers": [
+        "security audit",
+        "is this secure",
+        "check for vulnerabilities"
+      ],
       "category": "security"
     },
     {
@@ -93,7 +137,11 @@
       "entityType": "skill",
       "name": "db-schema-reviewer",
       "description": "Reviews database schemas and migrations for problems",
-      "triggers": ["review this migration", "check my schema", "database design review"],
+      "triggers": [
+        "review this migration",
+        "check my schema",
+        "database design review"
+      ],
       "category": "database"
     },
     {
@@ -192,42 +240,110 @@
       "entityType": "command",
       "name": "preflight",
       "description": "Fast pre-commit gate: checks for secrets, debug noise, test alignment, and diff sanity",
-      "triggers": ["preflight", "run preflight"]
+      "triggers": [
+        "preflight",
+        "run preflight"
+      ]
     },
     {
       "id": "cmd-council-review",
       "entityType": "command",
       "name": "council-review",
       "description": "Five-role council review on staged diffs with GO / REVISE / BLOCK verdicts",
-      "triggers": ["full review", "council review"]
+      "triggers": [
+        "full review",
+        "council review"
+      ]
     },
     {
       "id": "cmd-council-implement",
       "entityType": "command",
       "name": "council-implement",
       "description": "Lead engineer workflow: plan, parallel FE/BE agents, cross-review, verify, and council review",
-      "triggers": ["council-implement"]
+      "triggers": [
+        "council-implement"
+      ]
     },
     {
       "id": "cmd-retro",
       "entityType": "command",
       "name": "retro",
       "description": "Sprint, incident, or feature retrospective with action items and skill-gap analysis",
-      "triggers": ["retro sprint", "retro incident", "retro feature"]
+      "triggers": [
+        "retro sprint",
+        "retro incident",
+        "retro feature"
+      ]
     },
     {
       "id": "cmd-skill-check",
       "entityType": "command",
       "name": "skill-check",
       "description": "Validates a SKILL.md file for frontmatter, triggers, overlap, and instruction quality",
-      "triggers": ["skill-check", "validate this skill"]
+      "triggers": [
+        "skill-check",
+        "validate this skill"
+      ]
     },
     {
       "id": "cmd-skill-override",
       "entityType": "command",
       "name": "skill-override",
       "description": "Append-only overrides to any skill with unique IDs, revert, and list support",
-      "triggers": ["skill-override"]
+      "triggers": [
+        "skill-override"
+      ]
+    },
+    {
+      "id": "skill-dx",
+      "entityType": "skill",
+      "name": "dx",
+      "description": "Audits developer experience: setup friction, confusing APIs, missing docs, poor error messages, slow feedback loops, and onboarding pain points",
+      "triggers": [
+        "improve the DX",
+        "developer experience audit",
+        "this is confusing",
+        "make this easier to use"
+      ],
+      "category": "quality"
+    },
+    {
+      "id": "skill-architecture-reviewer",
+      "entityType": "skill",
+      "name": "architecture-reviewer",
+      "description": "Evaluates architectural decisions, reviews where new code should live, detects drift from established patterns, and generates architecture diagrams and documentation",
+      "triggers": [
+        "where should this live",
+        "which layer does this belong in",
+        "is this the right structure",
+        "how should I design this",
+        "adding a new service",
+        "adding a new module",
+        "refactoring across boundaries",
+        "planning a new feature"
+      ],
+      "category": "architecture"
+    },
+    {
+      "id": "agent-architecture-advisor",
+      "entityType": "agent",
+      "name": "architecture-advisor",
+      "description": "Senior architect consulted during planning phase before implementation begins. Evaluates proposed designs, identifies structural risks, recommends where new code belongs, and flags decisions that need ADRs",
+      "role": "planning"
+    },
+    {
+      "id": "cmd-architecture",
+      "entityType": "command",
+      "name": "architecture",
+      "description": "Run a full codebase architecture audit covering drift, coupling, gaps, and strengths. Updates PROJECT.md with the architecture section",
+      "triggers": [
+        "/architecture",
+        "/architecture frontend",
+        "/architecture backend",
+        "/architecture boundaries",
+        "/architecture diagram",
+        "/architecture update"
+      ]
     }
   ],
   "edges": [
@@ -766,6 +882,134 @@
       "targetType": "skill",
       "targetId": "skill-security-auditor",
       "label": "defers deep analysis"
+    },
+    {
+      "id": "edge-agent-council-reviewer--skill-dx",
+      "sourceType": "agent",
+      "sourceId": "agent-council-reviewer",
+      "targetType": "skill",
+      "targetId": "skill-dx",
+      "label": "runs DX analysis"
+    },
+    {
+      "id": "edge-agent-onboarding-guide--skill-dx",
+      "sourceType": "agent",
+      "sourceId": "agent-onboarding-guide",
+      "targetType": "skill",
+      "targetId": "skill-dx",
+      "label": "audits setup DX"
+    },
+    {
+      "id": "edge-agent-debt-tracker--skill-dx",
+      "sourceType": "agent",
+      "sourceId": "agent-debt-tracker",
+      "targetType": "skill",
+      "targetId": "skill-dx",
+      "label": "DX debt"
+    },
+    {
+      "id": "edge-skill-dx--skill-doc-writer",
+      "sourceType": "skill",
+      "sourceId": "skill-dx",
+      "targetType": "skill",
+      "targetId": "skill-doc-writer",
+      "label": "improves docs"
+    },
+    {
+      "id": "edge-skill-dx--skill-refactor-guide",
+      "sourceType": "skill",
+      "sourceId": "skill-dx",
+      "targetType": "skill",
+      "targetId": "skill-refactor-guide",
+      "label": "simplifies APIs"
+    },
+    {
+      "id": "edge-skill-code-reviewer--skill-dx",
+      "sourceType": "skill",
+      "sourceId": "skill-code-reviewer",
+      "targetType": "skill",
+      "targetId": "skill-dx",
+      "label": "defers DX analysis"
+    },
+    {
+      "id": "edge-cmd-council-review--skill-dx",
+      "sourceType": "command",
+      "sourceId": "cmd-council-review",
+      "targetType": "skill",
+      "targetId": "skill-dx",
+      "label": "DX review role"
+    },
+    {
+      "id": "edge-agent-orchestrator--agent-architecture-advisor",
+      "sourceType": "agent",
+      "sourceId": "agent-orchestrator",
+      "targetType": "agent",
+      "targetId": "agent-architecture-advisor",
+      "label": "consults on structure"
+    },
+    {
+      "id": "edge-agent-architecture-advisor--skill-architecture-reviewer",
+      "sourceType": "agent",
+      "sourceId": "agent-architecture-advisor",
+      "targetType": "skill",
+      "targetId": "skill-architecture-reviewer",
+      "label": "runs review"
+    },
+    {
+      "id": "edge-agent-architecture-advisor--skill-adr-writer",
+      "sourceType": "agent",
+      "sourceId": "agent-architecture-advisor",
+      "targetType": "skill",
+      "targetId": "skill-adr-writer",
+      "label": "flags decisions"
+    },
+    {
+      "id": "edge-skill-architecture-reviewer--skill-refactor-guide",
+      "sourceType": "skill",
+      "sourceId": "skill-architecture-reviewer",
+      "targetType": "skill",
+      "targetId": "skill-refactor-guide",
+      "label": "structural refactors"
+    },
+    {
+      "id": "edge-skill-architecture-reviewer--skill-adr-writer",
+      "sourceType": "skill",
+      "sourceId": "skill-architecture-reviewer",
+      "targetType": "skill",
+      "targetId": "skill-adr-writer",
+      "label": "records decisions"
+    },
+    {
+      "id": "edge-skill-code-reviewer--skill-architecture-reviewer",
+      "sourceType": "skill",
+      "sourceId": "skill-code-reviewer",
+      "targetType": "skill",
+      "targetId": "skill-architecture-reviewer",
+      "label": "defers structural issues"
+    },
+    {
+      "id": "edge-cmd-architecture--agent-architecture-advisor",
+      "sourceType": "command",
+      "sourceId": "cmd-architecture",
+      "targetType": "agent",
+      "targetId": "agent-architecture-advisor",
+      "label": "invokes advisor"
+    },
+    {
+      "id": "edge-cmd-architecture--skill-architecture-reviewer",
+      "sourceType": "command",
+      "sourceId": "cmd-architecture",
+      "targetType": "skill",
+      "targetId": "skill-architecture-reviewer",
+      "label": "runs audit"
+    },
+    {
+      "id": "edge-agent-debt-tracker--skill-architecture-reviewer",
+      "sourceType": "agent",
+      "sourceId": "agent-debt-tracker",
+      "targetType": "skill",
+      "targetId": "skill-architecture-reviewer",
+      "label": "structural debt"
     }
   ]
 }

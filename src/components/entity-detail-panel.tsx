@@ -28,41 +28,36 @@ const DOWNLOAD_SCOPE_OPTIONS: { value: DownloadScope; label: string; description
   { value: "all", label: "All connections", description: "Predecessors + successors" },
 ];
 
-async function fetchEntityMarkdown(
+async function fetchRawContent(
   type: EntityType,
   name: string,
-): Promise<{ name: string; type: EntityType; content: string } | null> {
+): Promise<{ content: string; path: string } | null> {
   try {
-    const res = await fetch(`/api/entities/${type}/${encodeURIComponent(name)}/content`);
+    const res = await fetch(
+      `/api/entities/${type}/${encodeURIComponent(name)}/content?raw=1`,
+    );
     if (!res.ok) return null;
     const json = await res.json();
-    const raw: string = json.content ?? "";
-    const stripped = raw.replace(/^---\r?\n[\s\S]*?\r?\n---\r?\n?/, "");
-    return { name, type, content: stripped };
+    return { content: json.content ?? "", path: json.path ?? "" };
   } catch {
     return null;
   }
 }
 
-function bundleMarkdown(
-  primary: { name: string; type: EntityType; content: string },
-  connected: { name: string; type: EntityType; content: string | null }[],
-): string {
-  const sections = [`# ${primary.name} (${primary.type})\n\n${primary.content}`];
-
-  for (const c of connected) {
-    if (c.content) {
-      sections.push(`# ${c.name} (${c.type})\n\n${c.content}`);
-    } else {
-      sections.push(`# ${c.name} (${c.type})\n\n> Content not available for ${c.name}.`);
-    }
-  }
-
-  return sections.join("\n\n---\n\n");
+function triggerMarkdownDownload(content: string, filename: string): void {
+  const blob = new Blob([content], { type: "text/markdown" });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = filename;
+  anchor.rel = "noopener";
+  document.body.appendChild(anchor);
+  anchor.click();
+  anchor.remove();
+  URL.revokeObjectURL(url);
 }
 
-function triggerDownload(content: string, filename: string): void {
-  const blob = new Blob([content], { type: "text/markdown" });
+function triggerBlobDownload(blob: Blob, filename: string): void {
   const url = URL.createObjectURL(blob);
   const anchor = document.createElement("a");
   anchor.href = url;
@@ -172,22 +167,26 @@ export function EntityDetailPanel({ entity, edges, entities, onClose }: EntityDe
     if (!content || !entity) return;
 
     if (downloadScope === "single") {
-      triggerDownload(content, `${entity.name}.md`);
+      const result = await fetchRawContent(entity.entityType, entity.name);
+      const filename = result?.path?.split("/").pop() ?? `${entity.name}.md`;
+      triggerMarkdownDownload(result?.content ?? content, filename);
       setShowDownloadPopover(false);
       return;
     }
 
     setDownloading(true);
 
-    const connectedEntities: GraphEntity[] = [];
-    const seen = new Set<string>();
+    const bundleEntries: { type: EntityType; name: string }[] = [
+      { type: entity.entityType, name: entity.name },
+    ];
+    const seen = new Set<string>([entity.id]);
 
     if (downloadScope === "incoming" || downloadScope === "all") {
       for (const edge of incoming) {
         const e = entityById.get(edge.sourceId);
         if (e && !seen.has(e.id)) {
           seen.add(e.id);
-          connectedEntities.push(e);
+          bundleEntries.push({ type: e.entityType, name: e.name });
         }
       }
     }
@@ -196,28 +195,26 @@ export function EntityDetailPanel({ entity, edges, entities, onClose }: EntityDe
         const e = entityById.get(edge.targetId);
         if (e && !seen.has(e.id)) {
           seen.add(e.id);
-          connectedEntities.push(e);
+          bundleEntries.push({ type: e.entityType, name: e.name });
         }
       }
     }
 
-    const results = await Promise.all(
-      connectedEntities.map((e) => fetchEntityMarkdown(e.entityType, e.name)),
-    );
-
-    const connected = connectedEntities.map((e, i) => ({
-      name: e.name,
-      type: e.entityType,
-      content: results[i]?.content ?? null,
-    }));
-
-    const bundled = bundleMarkdown(
-      { name: entity.name, type: entity.entityType, content },
-      connected,
-    );
-
-    const filename = connected.length > 0 ? `${entity.name}-bundle.md` : `${entity.name}.md`;
-    triggerDownload(bundled, filename);
+    try {
+      const res = await fetch("/api/entities/bundle", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          entities: bundleEntries,
+          zipName: `${entity.name}-bundle`,
+        }),
+      });
+      if (!res.ok) throw new Error("Bundle request failed");
+      const blob = await res.blob();
+      triggerBlobDownload(blob, `${entity.name}-bundle.zip`);
+    } catch {
+      // silently fail — user can retry
+    }
 
     setDownloading(false);
     setShowDownloadPopover(false);
@@ -385,8 +382,10 @@ export function EntityDetailPanel({ entity, edges, entities, onClose }: EntityDe
                               <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
                               Fetching…
                             </>
+                          ) : downloadScope === "single" ? (
+                            "Download .md"
                           ) : (
-                            "Download"
+                            "Download .zip"
                           )}
                         </button>
                       </div>

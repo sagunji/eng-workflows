@@ -68,7 +68,7 @@ If preflight fails:
 Fix these before opening the PR.
 ```
 
-## Step 2 — PR description
+## Step 3 — PR description
 
 Apply the `pr-describer` skill to the staged diff.
 
@@ -79,7 +79,7 @@ Produce:
 - How to test section: exact steps, not "run the tests"
 - Risks section: only if there are real risks
 
-## Step 3 — Deploy checklist (conditional)
+## Step 4 — Deploy checklist (conditional)
 
 If this is going to production OR if the diff includes:
 - Database migrations
@@ -93,7 +93,7 @@ scoped to what actually changed. Skip sections that don't apply.
 If this is a development or staging-only PR, skip this step and note:
 "Deploy checklist skipped — staging deployment, not production."
 
-## Step 4 — Update context file
+## Step 5 — Update context file
 
 Invoke the `context-generator` agent with a summary of what this PR
 contains so PROJECT.md is updated before the PR merges, not after.
@@ -104,7 +104,7 @@ Pass:
 - Any new patterns introduced
 - Any decisions made during implementation
 
-## Step 5 — Output
+## Step 6 — Output
 
 Produce a single, copyable output:
 

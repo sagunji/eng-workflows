@@ -1,0 +1,771 @@
+{
+  "entities": [
+    {
+      "id": "skill-project-planner",
+      "entityType": "skill",
+      "name": "project-planner",
+      "description": "Structures and plans any software project from scratch",
+      "triggers": ["plan this project", "create a roadmap", "break this into tasks"],
+      "category": "planning"
+    },
+    {
+      "id": "skill-code-reviewer",
+      "entityType": "skill",
+      "name": "code-reviewer",
+      "description": "Reviews code for logic bugs, style issues, and anti-patterns",
+      "triggers": ["review this", "check my code", "look at this PR"],
+      "category": "quality"
+    },
+    {
+      "id": "skill-debug-detective",
+      "entityType": "skill",
+      "name": "debug-detective",
+      "description": "Systematically diagnoses bugs and unexpected behaviour",
+      "triggers": ["it's not working", "help me debug", "why is this failing"],
+      "category": "debugging"
+    },
+    {
+      "id": "skill-test-writer",
+      "entityType": "skill",
+      "name": "test-writer",
+      "description": "Generates unit, integration, and edge-case tests",
+      "triggers": ["write tests for this", "add test coverage", "unit tests"],
+      "category": "testing"
+    },
+    {
+      "id": "skill-doc-writer",
+      "entityType": "skill",
+      "name": "doc-writer",
+      "description": "Writes developer documentation: READMEs, docstrings, API refs",
+      "triggers": ["write a README", "document this API", "add docstrings"],
+      "category": "documentation"
+    },
+    {
+      "id": "skill-deploy-checklist",
+      "entityType": "skill",
+      "name": "deploy-checklist",
+      "description": "Generates pre-deployment checklists tailored to the stack",
+      "triggers": ["pre-release checklist", "deploying to production", "ready to ship"],
+      "category": "operations"
+    },
+    {
+      "id": "skill-pr-describer",
+      "entityType": "skill",
+      "name": "pr-describer",
+      "description": "Writes clear PR descriptions from diffs or commit logs",
+      "triggers": ["write a PR description", "describe this PR", "pull request summary"],
+      "category": "documentation"
+    },
+    {
+      "id": "skill-adr-writer",
+      "entityType": "skill",
+      "name": "adr-writer",
+      "description": "Writes Architecture Decision Records for technical decisions",
+      "triggers": ["write an ADR", "document this decision", "architecture decision"],
+      "category": "documentation"
+    },
+    {
+      "id": "skill-refactor-guide",
+      "entityType": "skill",
+      "name": "refactor-guide",
+      "description": "Produces safe, sequenced plans for refactoring code",
+      "triggers": ["refactor this", "clean this up", "how do I restructure this"],
+      "category": "quality"
+    },
+    {
+      "id": "skill-perf-profiler",
+      "entityType": "skill",
+      "name": "perf-profiler",
+      "description": "Identifies performance bottlenecks in frontend and backend",
+      "triggers": ["this is slow", "performance is bad", "page is sluggish"],
+      "category": "performance"
+    },
+    {
+      "id": "skill-security-auditor",
+      "entityType": "skill",
+      "name": "security-auditor",
+      "description": "Audits code for security vulnerabilities and OWASP issues",
+      "triggers": ["security audit", "is this secure", "check for vulnerabilities"],
+      "category": "security"
+    },
+    {
+      "id": "skill-db-schema-reviewer",
+      "entityType": "skill",
+      "name": "db-schema-reviewer",
+      "description": "Reviews database schemas and migrations for problems",
+      "triggers": ["review this migration", "check my schema", "database design review"],
+      "category": "database"
+    },
+    {
+      "id": "agent-orchestrator",
+      "entityType": "agent",
+      "name": "orchestrator",
+      "description": "Master coordinator that decomposes work, delegates to specialists, and manages the full development lifecycle",
+      "role": "coordination"
+    },
+    {
+      "id": "agent-frontend-engineer",
+      "entityType": "agent",
+      "name": "frontend-engineer",
+      "description": "Senior frontend specialist: React/Next.js UI, components, hooks, and client-side testing",
+      "role": "implementation"
+    },
+    {
+      "id": "agent-backend-engineer",
+      "entityType": "agent",
+      "name": "backend-engineer",
+      "description": "Senior backend specialist: API routes, services, database logic, and server-side testing",
+      "role": "implementation"
+    },
+    {
+      "id": "agent-shared-engineer",
+      "entityType": "agent",
+      "name": "shared-engineer",
+      "description": "Shared package maintainer: types, pure utilities, constants, and cross-boundary contracts",
+      "role": "implementation"
+    },
+    {
+      "id": "agent-verifier",
+      "entityType": "agent",
+      "name": "verifier",
+      "description": "Quality gate that runs typecheck, lint, format, tests, and smoke checks before merge",
+      "role": "verification"
+    },
+    {
+      "id": "agent-council-reviewer",
+      "entityType": "agent",
+      "name": "council-reviewer",
+      "description": "Five-role review council (Architect, QA, Security, DX, Maintainer) that evaluates changesets",
+      "role": "review"
+    },
+    {
+      "id": "agent-qa-lead",
+      "entityType": "agent",
+      "name": "qa-lead",
+      "description": "QA coverage specialist that finds test gaps and writes missing tests",
+      "role": "testing"
+    },
+    {
+      "id": "agent-security-reviewer",
+      "entityType": "agent",
+      "name": "security-reviewer",
+      "description": "Security-focused reviewer that analyzes diffs for exploitable vulnerabilities",
+      "role": "security"
+    },
+    {
+      "id": "agent-context-generator",
+      "entityType": "agent",
+      "name": "context-generator",
+      "description": "Project memory keeper that maintains living documentation of stack, patterns, and decisions",
+      "role": "documentation"
+    },
+    {
+      "id": "agent-debt-tracker",
+      "entityType": "agent",
+      "name": "debt-tracker",
+      "description": "Technical debt scanner that identifies, categorizes, and prioritizes code debt",
+      "role": "analysis"
+    },
+    {
+      "id": "agent-pr-packager",
+      "entityType": "agent",
+      "name": "pr-packager",
+      "description": "Pre-PR bundler: runs preflight, generates PR description, deploy checklist, and updates context",
+      "role": "release"
+    },
+    {
+      "id": "agent-onboarding-guide",
+      "entityType": "agent",
+      "name": "onboarding-guide",
+      "description": "Onboarding author that writes setup guides and workflow documentation for new developers",
+      "role": "documentation"
+    },
+    {
+      "id": "agent-secret-guard",
+      "entityType": "agent",
+      "name": "secret-guard",
+      "description": "Pre-commit security guard that scans staged changes for secrets, credentials, PII, and debug artifacts",
+      "role": "security"
+    },
+    {
+      "id": "cmd-preflight",
+      "entityType": "command",
+      "name": "preflight",
+      "description": "Fast pre-commit gate: checks for secrets, debug noise, test alignment, and diff sanity",
+      "triggers": ["preflight", "run preflight"]
+    },
+    {
+      "id": "cmd-council-review",
+      "entityType": "command",
+      "name": "council-review",
+      "description": "Five-role council review on staged diffs with GO / REVISE / BLOCK verdicts",
+      "triggers": ["full review", "council review"]
+    },
+    {
+      "id": "cmd-council-implement",
+      "entityType": "command",
+      "name": "council-implement",
+      "description": "Lead engineer workflow: plan, parallel FE/BE agents, cross-review, verify, and council review",
+      "triggers": ["council-implement"]
+    },
+    {
+      "id": "cmd-retro",
+      "entityType": "command",
+      "name": "retro",
+      "description": "Sprint, incident, or feature retrospective with action items and skill-gap analysis",
+      "triggers": ["retro sprint", "retro incident", "retro feature"]
+    },
+    {
+      "id": "cmd-skill-check",
+      "entityType": "command",
+      "name": "skill-check",
+      "description": "Validates a SKILL.md file for frontmatter, triggers, overlap, and instruction quality",
+      "triggers": ["skill-check", "validate this skill"]
+    },
+    {
+      "id": "cmd-skill-override",
+      "entityType": "command",
+      "name": "skill-override",
+      "description": "Append-only overrides to any skill with unique IDs, revert, and list support",
+      "triggers": ["skill-override"]
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge-skill-code-reviewer--skill-debug-detective",
+      "sourceType": "skill",
+      "sourceId": "skill-code-reviewer",
+      "targetType": "skill",
+      "targetId": "skill-debug-detective",
+      "label": "finds bugs"
+    },
+    {
+      "id": "edge-skill-code-reviewer--skill-refactor-guide",
+      "sourceType": "skill",
+      "sourceId": "skill-code-reviewer",
+      "targetType": "skill",
+      "targetId": "skill-refactor-guide",
+      "label": "identifies complexity"
+    },
+    {
+      "id": "edge-skill-debug-detective--skill-test-writer",
+      "sourceType": "skill",
+      "sourceId": "skill-debug-detective",
+      "targetType": "skill",
+      "targetId": "skill-test-writer",
+      "label": "prevents regression"
+    },
+    {
+      "id": "edge-skill-test-writer--skill-code-reviewer",
+      "sourceType": "skill",
+      "sourceId": "skill-test-writer",
+      "targetType": "skill",
+      "targetId": "skill-code-reviewer",
+      "label": "validates fixes"
+    },
+    {
+      "id": "edge-skill-project-planner--skill-adr-writer",
+      "sourceType": "skill",
+      "sourceId": "skill-project-planner",
+      "targetType": "skill",
+      "targetId": "skill-adr-writer",
+      "label": "drives decisions"
+    },
+    {
+      "id": "edge-skill-adr-writer--skill-doc-writer",
+      "sourceType": "skill",
+      "sourceId": "skill-adr-writer",
+      "targetType": "skill",
+      "targetId": "skill-doc-writer",
+      "label": "records context"
+    },
+    {
+      "id": "edge-skill-refactor-guide--skill-test-writer",
+      "sourceType": "skill",
+      "sourceId": "skill-refactor-guide",
+      "targetType": "skill",
+      "targetId": "skill-test-writer",
+      "label": "requires tests first"
+    },
+    {
+      "id": "edge-skill-refactor-guide--skill-code-reviewer",
+      "sourceType": "skill",
+      "sourceId": "skill-refactor-guide",
+      "targetType": "skill",
+      "targetId": "skill-code-reviewer",
+      "label": "needs review after"
+    },
+    {
+      "id": "edge-skill-security-auditor--skill-debug-detective",
+      "sourceType": "skill",
+      "sourceId": "skill-security-auditor",
+      "targetType": "skill",
+      "targetId": "skill-debug-detective",
+      "label": "finds vulnerabilities"
+    },
+    {
+      "id": "edge-skill-perf-profiler--skill-refactor-guide",
+      "sourceType": "skill",
+      "sourceId": "skill-perf-profiler",
+      "targetType": "skill",
+      "targetId": "skill-refactor-guide",
+      "label": "identifies hotspots"
+    },
+    {
+      "id": "edge-skill-db-schema-reviewer--skill-security-auditor",
+      "sourceType": "skill",
+      "sourceId": "skill-db-schema-reviewer",
+      "targetType": "skill",
+      "targetId": "skill-security-auditor",
+      "label": "checks data safety"
+    },
+    {
+      "id": "edge-skill-deploy-checklist--skill-security-auditor",
+      "sourceType": "skill",
+      "sourceId": "skill-deploy-checklist",
+      "targetType": "skill",
+      "targetId": "skill-security-auditor",
+      "label": "pre-deploy audit"
+    },
+    {
+      "id": "edge-skill-pr-describer--skill-code-reviewer",
+      "sourceType": "skill",
+      "sourceId": "skill-pr-describer",
+      "targetType": "skill",
+      "targetId": "skill-code-reviewer",
+      "label": "enables review"
+    },
+    {
+      "id": "edge-skill-doc-writer--skill-pr-describer",
+      "sourceType": "skill",
+      "sourceId": "skill-doc-writer",
+      "targetType": "skill",
+      "targetId": "skill-pr-describer",
+      "label": "feeds PR context"
+    },
+    {
+      "id": "edge-agent-orchestrator--agent-frontend-engineer",
+      "sourceType": "agent",
+      "sourceId": "agent-orchestrator",
+      "targetType": "agent",
+      "targetId": "agent-frontend-engineer",
+      "label": "delegates frontend"
+    },
+    {
+      "id": "edge-agent-orchestrator--agent-backend-engineer",
+      "sourceType": "agent",
+      "sourceId": "agent-orchestrator",
+      "targetType": "agent",
+      "targetId": "agent-backend-engineer",
+      "label": "delegates backend"
+    },
+    {
+      "id": "edge-agent-orchestrator--agent-shared-engineer",
+      "sourceType": "agent",
+      "sourceId": "agent-orchestrator",
+      "targetType": "agent",
+      "targetId": "agent-shared-engineer",
+      "label": "delegates shared"
+    },
+    {
+      "id": "edge-agent-orchestrator--agent-verifier",
+      "sourceType": "agent",
+      "sourceId": "agent-orchestrator",
+      "targetType": "agent",
+      "targetId": "agent-verifier",
+      "label": "runs verification"
+    },
+    {
+      "id": "edge-agent-orchestrator--agent-council-reviewer",
+      "sourceType": "agent",
+      "sourceId": "agent-orchestrator",
+      "targetType": "agent",
+      "targetId": "agent-council-reviewer",
+      "label": "requests review"
+    },
+    {
+      "id": "edge-agent-orchestrator--agent-context-generator",
+      "sourceType": "agent",
+      "sourceId": "agent-orchestrator",
+      "targetType": "agent",
+      "targetId": "agent-context-generator",
+      "label": "updates context"
+    },
+    {
+      "id": "edge-agent-orchestrator--agent-debt-tracker",
+      "sourceType": "agent",
+      "sourceId": "agent-orchestrator",
+      "targetType": "agent",
+      "targetId": "agent-debt-tracker",
+      "label": "scans debt"
+    },
+    {
+      "id": "edge-agent-orchestrator--agent-pr-packager",
+      "sourceType": "agent",
+      "sourceId": "agent-orchestrator",
+      "targetType": "agent",
+      "targetId": "agent-pr-packager",
+      "label": "packages PR"
+    },
+    {
+      "id": "edge-agent-orchestrator--agent-onboarding-guide",
+      "sourceType": "agent",
+      "sourceId": "agent-orchestrator",
+      "targetType": "agent",
+      "targetId": "agent-onboarding-guide",
+      "label": "writes onboarding"
+    },
+    {
+      "id": "edge-agent-orchestrator--agent-qa-lead",
+      "sourceType": "agent",
+      "sourceId": "agent-orchestrator",
+      "targetType": "agent",
+      "targetId": "agent-qa-lead",
+      "label": "requests QA"
+    },
+    {
+      "id": "edge-agent-orchestrator--agent-security-reviewer",
+      "sourceType": "agent",
+      "sourceId": "agent-orchestrator",
+      "targetType": "agent",
+      "targetId": "agent-security-reviewer",
+      "label": "requests security review"
+    },
+    {
+      "id": "edge-agent-orchestrator--cmd-preflight",
+      "sourceType": "agent",
+      "sourceId": "agent-orchestrator",
+      "targetType": "command",
+      "targetId": "cmd-preflight",
+      "label": "runs preflight"
+    },
+    {
+      "id": "edge-agent-orchestrator--cmd-council-review",
+      "sourceType": "agent",
+      "sourceId": "agent-orchestrator",
+      "targetType": "command",
+      "targetId": "cmd-council-review",
+      "label": "triggers review"
+    },
+    {
+      "id": "edge-agent-orchestrator--cmd-council-implement",
+      "sourceType": "agent",
+      "sourceId": "agent-orchestrator",
+      "targetType": "command",
+      "targetId": "cmd-council-implement",
+      "label": "triggers implementation"
+    },
+    {
+      "id": "edge-agent-orchestrator--cmd-retro",
+      "sourceType": "agent",
+      "sourceId": "agent-orchestrator",
+      "targetType": "command",
+      "targetId": "cmd-retro",
+      "label": "runs retro"
+    },
+    {
+      "id": "edge-agent-orchestrator--cmd-skill-check",
+      "sourceType": "agent",
+      "sourceId": "agent-orchestrator",
+      "targetType": "command",
+      "targetId": "cmd-skill-check",
+      "label": "validates skills"
+    },
+    {
+      "id": "edge-agent-orchestrator--cmd-skill-override",
+      "sourceType": "agent",
+      "sourceId": "agent-orchestrator",
+      "targetType": "command",
+      "targetId": "cmd-skill-override",
+      "label": "overrides skills"
+    },
+    {
+      "id": "edge-agent-frontend-engineer--skill-test-writer",
+      "sourceType": "agent",
+      "sourceId": "agent-frontend-engineer",
+      "targetType": "skill",
+      "targetId": "skill-test-writer",
+      "label": "writes tests"
+    },
+    {
+      "id": "edge-agent-frontend-engineer--skill-doc-writer",
+      "sourceType": "agent",
+      "sourceId": "agent-frontend-engineer",
+      "targetType": "skill",
+      "targetId": "skill-doc-writer",
+      "label": "writes docs"
+    },
+    {
+      "id": "edge-agent-backend-engineer--skill-test-writer",
+      "sourceType": "agent",
+      "sourceId": "agent-backend-engineer",
+      "targetType": "skill",
+      "targetId": "skill-test-writer",
+      "label": "writes tests"
+    },
+    {
+      "id": "edge-agent-backend-engineer--skill-doc-writer",
+      "sourceType": "agent",
+      "sourceId": "agent-backend-engineer",
+      "targetType": "skill",
+      "targetId": "skill-doc-writer",
+      "label": "writes docs"
+    },
+    {
+      "id": "edge-agent-backend-engineer--skill-security-auditor",
+      "sourceType": "agent",
+      "sourceId": "agent-backend-engineer",
+      "targetType": "skill",
+      "targetId": "skill-security-auditor",
+      "label": "audits security"
+    },
+    {
+      "id": "edge-agent-shared-engineer--skill-test-writer",
+      "sourceType": "agent",
+      "sourceId": "agent-shared-engineer",
+      "targetType": "skill",
+      "targetId": "skill-test-writer",
+      "label": "writes tests"
+    },
+    {
+      "id": "edge-agent-shared-engineer--skill-doc-writer",
+      "sourceType": "agent",
+      "sourceId": "agent-shared-engineer",
+      "targetType": "skill",
+      "targetId": "skill-doc-writer",
+      "label": "writes docs"
+    },
+    {
+      "id": "edge-agent-qa-lead--skill-test-writer",
+      "sourceType": "agent",
+      "sourceId": "agent-qa-lead",
+      "targetType": "skill",
+      "targetId": "skill-test-writer",
+      "label": "generates tests"
+    },
+    {
+      "id": "edge-agent-security-reviewer--skill-security-auditor",
+      "sourceType": "agent",
+      "sourceId": "agent-security-reviewer",
+      "targetType": "skill",
+      "targetId": "skill-security-auditor",
+      "label": "runs audit"
+    },
+    {
+      "id": "edge-agent-pr-packager--skill-pr-describer",
+      "sourceType": "agent",
+      "sourceId": "agent-pr-packager",
+      "targetType": "skill",
+      "targetId": "skill-pr-describer",
+      "label": "generates PR desc"
+    },
+    {
+      "id": "edge-agent-pr-packager--skill-deploy-checklist",
+      "sourceType": "agent",
+      "sourceId": "agent-pr-packager",
+      "targetType": "skill",
+      "targetId": "skill-deploy-checklist",
+      "label": "generates checklist"
+    },
+    {
+      "id": "edge-agent-pr-packager--agent-context-generator",
+      "sourceType": "agent",
+      "sourceId": "agent-pr-packager",
+      "targetType": "agent",
+      "targetId": "agent-context-generator",
+      "label": "updates context"
+    },
+    {
+      "id": "edge-agent-debt-tracker--skill-debug-detective",
+      "sourceType": "agent",
+      "sourceId": "agent-debt-tracker",
+      "targetType": "skill",
+      "targetId": "skill-debug-detective",
+      "label": "bug debt"
+    },
+    {
+      "id": "edge-agent-debt-tracker--skill-refactor-guide",
+      "sourceType": "agent",
+      "sourceId": "agent-debt-tracker",
+      "targetType": "skill",
+      "targetId": "skill-refactor-guide",
+      "label": "complexity debt"
+    },
+    {
+      "id": "edge-agent-debt-tracker--skill-test-writer",
+      "sourceType": "agent",
+      "sourceId": "agent-debt-tracker",
+      "targetType": "skill",
+      "targetId": "skill-test-writer",
+      "label": "coverage debt"
+    },
+    {
+      "id": "edge-agent-debt-tracker--skill-doc-writer",
+      "sourceType": "agent",
+      "sourceId": "agent-debt-tracker",
+      "targetType": "skill",
+      "targetId": "skill-doc-writer",
+      "label": "doc debt"
+    },
+    {
+      "id": "edge-agent-debt-tracker--skill-security-auditor",
+      "sourceType": "agent",
+      "sourceId": "agent-debt-tracker",
+      "targetType": "skill",
+      "targetId": "skill-security-auditor",
+      "label": "security debt"
+    },
+    {
+      "id": "edge-agent-debt-tracker--skill-perf-profiler",
+      "sourceType": "agent",
+      "sourceId": "agent-debt-tracker",
+      "targetType": "skill",
+      "targetId": "skill-perf-profiler",
+      "label": "perf debt"
+    },
+    {
+      "id": "edge-agent-debt-tracker--skill-db-schema-reviewer",
+      "sourceType": "agent",
+      "sourceId": "agent-debt-tracker",
+      "targetType": "skill",
+      "targetId": "skill-db-schema-reviewer",
+      "label": "schema debt"
+    },
+    {
+      "id": "edge-agent-debt-tracker--skill-code-reviewer",
+      "sourceType": "agent",
+      "sourceId": "agent-debt-tracker",
+      "targetType": "skill",
+      "targetId": "skill-code-reviewer",
+      "label": "style debt"
+    },
+    {
+      "id": "edge-cmd-council-implement--skill-test-writer",
+      "sourceType": "command",
+      "sourceId": "cmd-council-implement",
+      "targetType": "skill",
+      "targetId": "skill-test-writer",
+      "label": "requires tests"
+    },
+    {
+      "id": "edge-cmd-council-implement--skill-doc-writer",
+      "sourceType": "command",
+      "sourceId": "cmd-council-implement",
+      "targetType": "skill",
+      "targetId": "skill-doc-writer",
+      "label": "requires docs"
+    },
+    {
+      "id": "edge-cmd-council-implement--skill-code-reviewer",
+      "sourceType": "command",
+      "sourceId": "cmd-council-implement",
+      "targetType": "skill",
+      "targetId": "skill-code-reviewer",
+      "label": "cross-review"
+    },
+    {
+      "id": "edge-cmd-council-implement--agent-frontend-engineer",
+      "sourceType": "command",
+      "sourceId": "cmd-council-implement",
+      "targetType": "agent",
+      "targetId": "agent-frontend-engineer",
+      "label": "spawns FE"
+    },
+    {
+      "id": "edge-cmd-council-implement--agent-backend-engineer",
+      "sourceType": "command",
+      "sourceId": "cmd-council-implement",
+      "targetType": "agent",
+      "targetId": "agent-backend-engineer",
+      "label": "spawns BE"
+    },
+    {
+      "id": "edge-cmd-council-implement--cmd-council-review",
+      "sourceType": "command",
+      "sourceId": "cmd-council-implement",
+      "targetType": "command",
+      "targetId": "cmd-council-review",
+      "label": "final review"
+    },
+    {
+      "id": "edge-cmd-preflight--cmd-council-review",
+      "sourceType": "command",
+      "sourceId": "cmd-preflight",
+      "targetType": "command",
+      "targetId": "cmd-council-review",
+      "label": "escalates to"
+    },
+    {
+      "id": "edge-cmd-skill-check--skill-code-reviewer",
+      "sourceType": "command",
+      "sourceId": "cmd-skill-check",
+      "targetType": "skill",
+      "targetId": "skill-code-reviewer",
+      "label": "validates"
+    },
+    {
+      "id": "edge-cmd-skill-check--skill-test-writer",
+      "sourceType": "command",
+      "sourceId": "cmd-skill-check",
+      "targetType": "skill",
+      "targetId": "skill-test-writer",
+      "label": "validates"
+    },
+    {
+      "id": "edge-cmd-skill-check--skill-project-planner",
+      "sourceType": "command",
+      "sourceId": "cmd-skill-check",
+      "targetType": "skill",
+      "targetId": "skill-project-planner",
+      "label": "validates"
+    },
+    {
+      "id": "edge-cmd-skill-override--skill-code-reviewer",
+      "sourceType": "command",
+      "sourceId": "cmd-skill-override",
+      "targetType": "skill",
+      "targetId": "skill-code-reviewer",
+      "label": "overrides"
+    },
+    {
+      "id": "edge-cmd-skill-override--skill-test-writer",
+      "sourceType": "command",
+      "sourceId": "cmd-skill-override",
+      "targetType": "skill",
+      "targetId": "skill-test-writer",
+      "label": "overrides"
+    },
+    {
+      "id": "edge-agent-orchestrator--agent-secret-guard",
+      "sourceType": "agent",
+      "sourceId": "agent-orchestrator",
+      "targetType": "agent",
+      "targetId": "agent-secret-guard",
+      "label": "runs before consolidation"
+    },
+    {
+      "id": "edge-agent-verifier--agent-secret-guard",
+      "sourceType": "agent",
+      "sourceId": "agent-verifier",
+      "targetType": "agent",
+      "targetId": "agent-secret-guard",
+      "label": "invokes secret scan"
+    },
+    {
+      "id": "edge-agent-pr-packager--agent-secret-guard",
+      "sourceType": "agent",
+      "sourceId": "agent-pr-packager",
+      "targetType": "agent",
+      "targetId": "agent-secret-guard",
+      "label": "runs preflight scan"
+    },
+    {
+      "id": "edge-agent-secret-guard--skill-security-auditor",
+      "sourceType": "agent",
+      "sourceId": "agent-secret-guard",
+      "targetType": "skill",
+      "targetId": "skill-security-auditor",
+      "label": "defers deep analysis"
+    }
+  ]
+}

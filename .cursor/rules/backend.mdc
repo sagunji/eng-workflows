@@ -1,0 +1,64 @@
+---
+description: Next.js API route conventions. Applies to all API route handlers.
+globs: ["src/app/api/**"]
+alwaysApply: false
+---
+
+## API route structure
+- One `route.ts` per endpoint in `src/app/api/[endpoint]/`.
+- Export named HTTP method handlers: `GET`, `POST`, `PUT`, `DELETE`.
+- Each handler receives `(request: NextRequest)` and returns a `NextResponse` or `Response`.
+
+```typescript
+import { NextRequest, NextResponse } from "next/server";
+
+export async function GET(request: NextRequest): Promise<Response> {
+  const data = await fetchData();
+  return NextResponse.json({ data });
+}
+```
+
+## Input validation
+- Validate request body and search params before processing.
+- Use Zod schemas colocated in the route file for validation.
+- Return 422 with descriptive errors on validation failure.
+- Never trust user input — sanitise paths, IDs, and filenames.
+
+## Error handling
+- Wrap handler bodies in try/catch — never let unhandled errors escape.
+- Return structured error responses:
+  ```typescript
+  return NextResponse.json(
+    { error: { message: "Not found", code: "NOT_FOUND" } },
+    { status: 404 }
+  );
+  ```
+- Never expose internal errors, stack traces, or file paths to the client.
+- Log the full error server-side; return only a safe message to the client.
+- HTTP status codes: 400 bad input, 404 not found, 422 validation failed, 500 internal.
+
+## Response shape
+```typescript
+// Success
+{ data: T, meta?: { total: number } }
+
+// Error
+{ error: { message: string, code: string } }
+```
+
+## Security
+- Validate and sanitise all path segments — prevent path traversal.
+- Never read files outside the project root without explicit allowlisting.
+- Set appropriate `Content-Type` and `Content-Disposition` headers for downloads.
+- Never expose `.env` values, internal paths, or system info in responses.
+
+## File locations
+- API route handlers: `src/app/api/[resource]/route.ts`
+- Dynamic segments: `src/app/api/[resource]/[id]/route.ts`
+- Shared server utilities: `src/lib/`
+
+## Do not
+- Do not use Express patterns (`req`, `res`, middleware chains) — use Next.js App Router conventions.
+- Do not instantiate database clients at the module level — use lazy initialisation if needed.
+- Do not return raw file system errors to the client.
+- Do not serve user-uploaded files without MIME type validation.

@@ -8,13 +8,26 @@ description: >
 
 # Council review
 
-## Invocation
+## Usage
 
-When this command runs, first ask:
+```
+/council-review             ← interactive: asks what to review
+/council-review diff        ← reviews git diff of current branch vs main
+/council-review staged      ← reviews git diff --staged
+```
+
+When invoked without arguments, ask:
 > "What should I review? Options:
 > 1. Current file
 > 2. Staged changes (`git diff --staged`)
-> 3. A diff or code — paste it below"
+> 3. Branch diff (`git diff main...HEAD`)
+> 4. A diff or code — paste it below"
+
+When invoked with `diff`, run `git diff main...HEAD` (or the appropriate
+base branch) and use that as input. When invoked with `staged`, use
+`git diff --staged`.
+
+If no git repo is detected, fall back to asking the user to paste a diff.
 
 Wait for the user to specify or paste input before proceeding.
 If the user already provided input when invoking the command, skip this

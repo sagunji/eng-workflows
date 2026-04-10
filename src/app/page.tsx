@@ -1,12 +1,18 @@
 import Link from "next/link";
 import { SiteFooter } from "@/components/site-footer";
+import graphData from "../../public/graph.json";
+import type { GraphData } from "@/types/graph";
 
 const GITHUB_URL = "https://github.com/sagunji/eng-workflows";
 
+const graph = graphData as GraphData;
+const countByType = (type: string) =>
+  graph.entities.filter((e) => e.entityType === type).length;
+
 const STATS = [
-  { label: "Skills", value: "14", color: "text-gray-300" },
-  { label: "Agents", value: "14", color: "text-violet-300" },
-  { label: "Commands", value: "7", color: "text-amber-300" },
+  { label: "Skills", value: String(countByType("skill")), color: "text-gray-300" },
+  { label: "Agents", value: String(countByType("agent")), color: "text-violet-300" },
+  { label: "Commands", value: String(countByType("command")), color: "text-amber-300" },
 ];
 
 export default function HomePage() {

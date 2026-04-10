@@ -9,7 +9,13 @@ description: >
 
 # Preflight
 
-## Purpose
+## Usage
+
+```
+/preflight              ← runs against staged changes (git diff --staged)
+/preflight [file]       ← runs against a specific file
+```
+
 A fast, opinionated gate that catches the things developers most commonly
 forget before committing or raising a PR. Runs in under a minute.
 Not a substitute for full council review — use that before merging.
@@ -22,8 +28,8 @@ If the user invoked with no input:
 > "Running preflight on your staged changes. Paste your diff or file if
 > you'd like me to check something specific instead."
 
-Default to staged changes (`git diff --staged`). If nothing is staged,
-check the current file.
+Default to staged changes (`git diff --staged`). If not in a git repo or
+nothing is staged, check the current file. If no file is open, ask.
 
 ---
 

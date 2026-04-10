@@ -1,3 +1,11 @@
+---
+description: >
+  Full codebase architecture audit. Analyses boundaries, coupling,
+  drift, and gaps. Produces a structured report and updates
+  .context/PROJECT.md. Use when you say "/architecture" or
+  "audit the architecture".
+---
+
 # Architecture
 
 Run a full codebase architecture audit. Produces a structured report
@@ -78,9 +86,9 @@ Violations by severity:
 Find modules that are imported by many others — these are coupling hotspots:
 
 ```bash
-# Find the most-imported files
-grep -r "from '" --include="*.ts" --include="*.tsx" | \
-  grep -oP "from '[^']+'" | sort | uniq -c | sort -rn | head -20
+# Find the most-imported files (works on macOS and Linux)
+rg -o "from '[^']+'" --type ts --type tsx --no-filename | \
+  sort | uniq -c | sort -rn | head -20
 ```
 
 For each hotspot: is this coupling intentional (a shared utility is
@@ -127,24 +135,26 @@ Common gaps:
 
 ## Step 4 — Generate the full system diagram
 
-Produce a Mermaid diagram showing the real architecture (not the ideal one):
+Produce a Mermaid diagram showing the real architecture (not the ideal one).
+Adapt the structure to the actual project layout — the template below is
+illustrative only. Read the project's directories before generating.
 
 ```mermaid
 graph TB
-  subgraph "Frontend — apps/frontend"
+  subgraph "Frontend"
     Pages[Pages]
     Components[Components]
     Hooks[Hooks]
   end
 
-  subgraph "Backend — apps/backend"
+  subgraph "Backend"
     Routes[Routes]
     Services[Services]
     DAL[Data access]
-    DB[(Postgres)]
+    DB[(Database)]
   end
 
-  subgraph "Shared — packages/shared"
+  subgraph "Shared"
     Types[Types]
     Utils[Utils]
   end
@@ -182,9 +192,7 @@ Mark any violations found in Audit 1 directly on the diagram.
 
 | Layer | Location | Purpose | Health |
 |-------|----------|---------|--------|
-| Frontend | apps/frontend | UI and state | ✅ Clean |
-| Backend | apps/backend | API and business logic | ⚠️ Some drift |
-| Shared | packages/shared | Cross-boundary types | ✅ Clean |
+| [name] | [actual path] | [actual purpose] | [assessment] |
 
 ---
 

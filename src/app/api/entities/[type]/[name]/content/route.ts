@@ -2,10 +2,12 @@ import { NextResponse } from "next/server";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 
-const PROJECT_ROOT = process.cwd();
+function rootJoin(...segments: string[]): string {
+  return join(/*turbopackIgnore: true*/ process.cwd(), ...segments);
+}
 
 const SKILL_NAME_ALIASES: Record<string, string> = {
-  "perf-profiler": "pref-profiler",
+  "refactor-guide": "refactor-guide.md",
 };
 
 function resolveRelativePath(type: string, name: string): string | null {
@@ -44,7 +46,7 @@ export async function GET(
   const raw = url.searchParams.get("raw") === "1";
 
   try {
-    const fileContent = await readFile(join(PROJECT_ROOT, relativePath), "utf-8");
+    const fileContent = await readFile(rootJoin(relativePath), "utf-8");
     const content = raw
       ? fileContent
       : fileContent.replace(/^---\r?\n[\s\S]*?\r?\n---\r?\n?/, "");

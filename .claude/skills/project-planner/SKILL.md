@@ -15,7 +15,7 @@ metadata:
   category: project-management
 ---
 
-# Project Planner
+# Project planner
 
 ## Purpose
 Turn any project description — however rough — into a structured, actionable

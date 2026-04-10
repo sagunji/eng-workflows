@@ -8,7 +8,13 @@ description: >
 
 # Skill check
 
-## Purpose
+## Usage
+
+```
+/skill-check                ← interactive: asks for skill content
+/skill-check <skill-name>   ← checks the named skill directly
+```
+
 Catch common skill authoring mistakes before they silently cause
 under-triggering, over-triggering, or poor output. Runs against a
 SKILL.md file or pasted skill content.
@@ -61,17 +67,23 @@ Rate each:
 ---
 
 ### Check 3 — Trigger overlap with existing skills
-Compare trigger phrases against the eight existing skills:
+Compare trigger phrases against all existing skills:
 
 ```
-project-planner  — plan, roadmap, milestones, scope, sprint
-code-reviewer    — review, check my code, PR, diff
-debug-detective  — broken, error, crash, stack trace, not working
-test-writer      — write tests, test coverage, unit tests
-doc-writer       — README, docstring, document this, changelog
-deploy-checklist — deploy, ship, release, pre-release
-pr-describer     — PR description, pull request, write a PR
-adr-writer       — ADR, architecture decision, why did we
+project-planner        — plan, roadmap, milestones, scope, sprint
+code-reviewer          — review, check my code, PR, diff
+debug-detective        — broken, error, crash, stack trace, not working
+test-writer            — write tests, test coverage, unit tests
+doc-writer             — README, docstring, document this, changelog (NOT ADRs)
+deploy-checklist       — deploy, ship, release, pre-release
+pr-describer           — PR description, pull request, write a PR
+adr-writer             — ADR, architecture decision, why did we
+refactor-guide         — refactor, clean up, too big, extract, split
+perf-profiler          — slow, sluggish, queries too long, large bundle
+security-auditor       — security audit, is this secure, vulnerabilities
+db-schema-reviewer     — migration, schema, check my schema, lock table
+architecture-reviewer  — where should this live, right structure, boundaries
+dx                     — improve the DX, confusing, make this easier
 ```
 
 Flag any new skill whose triggers overlap significantly with an

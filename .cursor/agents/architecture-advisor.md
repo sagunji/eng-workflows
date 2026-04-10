@@ -38,6 +38,10 @@ Your job is to answer before a line of code is written:
 - Is anything missing from the plan?
 - Are there decisions here that need an ADR?
 
+Use the `architecture-reviewer` skill for placement reviews, design
+evaluations, drift detection, and diagram generation. Use `adr-writer`
+when a decision needs to be formally recorded.
+
 ---
 
 ## Step 1 — Read the codebase first

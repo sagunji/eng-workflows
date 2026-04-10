@@ -53,6 +53,7 @@ function edgesForFocusNode(
 ): Edge[] {
   return baseEdges.map((edge) => {
     const data = edge.data;
+    if (!data) return edge;
     const baseStroke = edgeStyle(data.sourceType, data.targetType);
     const isIncident =
       focusNodeId !== null &&
@@ -180,11 +181,7 @@ function SkillGraphCanvas({
   const [layoutPending, setLayoutPending] = useState(false);
 
   useEffect(() => {
-    if (selectedEntityId === null) {
-      setSelectedNodeId(null);
-    } else {
-      setSelectedNodeId(selectedEntityId);
-    }
+    setSelectedNodeId(selectedEntityId ?? null);
   }, [selectedEntityId]);
 
   const focusNodeId = useMemo(
@@ -197,8 +194,8 @@ function SkillGraphCanvas({
     [baseEdges, focusNodeId],
   );
 
-  const onEdgesChange = useCallback((changes: EdgeChange<LayoutEdge>[]) => {
-    setBaseEdges((eds) => applyEdgeChanges(changes, eds));
+  const onEdgesChange = useCallback((changes: EdgeChange[]) => {
+    setBaseEdges((eds) => applyEdgeChanges(changes as EdgeChange<LayoutEdge>[], eds));
   }, []);
 
   const layoutData = useMemo(() => {
@@ -291,7 +288,7 @@ function SkillGraphCanvas({
           Laying out graph…
         </div>
       )}
-      <ReactFlow
+      <ReactFlow<Node, Edge>
         nodes={nodes}
         edges={edges}
         onNodesChange={onNodesChange}

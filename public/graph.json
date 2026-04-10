@@ -344,6 +344,27 @@
         "/architecture diagram",
         "/architecture update"
       ]
+    },
+    {
+      "id": "agent-brainstorm",
+      "entityType": "agent",
+      "name": "brainstorm",
+      "description": "Critical thinking mode that stress-tests ideas, plans, and designs. Surfaces risks, blind spots, and alternative directions before implementation begins",
+      "role": "planning"
+    },
+    {
+      "id": "agent-product-manager",
+      "entityType": "agent",
+      "name": "product-manager",
+      "description": "Strategic product advisor that guides what to build, why, and for whom. Provides RICE assessment, acceptance criteria, user stories, and go/no-go verdicts",
+      "role": "planning"
+    },
+    {
+      "id": "agent-ux-engineer",
+      "entityType": "agent",
+      "name": "ux-engineer",
+      "description": "UI/UX specialist that reviews designs and generates user flows, wireframes, component hierarchies, and interaction specs. Sits between product-manager and frontend-engineer",
+      "role": "design"
     }
   ],
   "edges": [
@@ -1010,6 +1031,126 @@
       "targetType": "skill",
       "targetId": "skill-architecture-reviewer",
       "label": "structural debt"
+    },
+    {
+      "id": "edge-agent-orchestrator--agent-product-manager",
+      "sourceType": "agent",
+      "sourceId": "agent-orchestrator",
+      "targetType": "agent",
+      "targetId": "agent-product-manager",
+      "label": "consults PM"
+    },
+    {
+      "id": "edge-agent-orchestrator--agent-ux-engineer",
+      "sourceType": "agent",
+      "sourceId": "agent-orchestrator",
+      "targetType": "agent",
+      "targetId": "agent-ux-engineer",
+      "label": "consults UX"
+    },
+    {
+      "id": "edge-agent-orchestrator--agent-brainstorm",
+      "sourceType": "agent",
+      "sourceId": "agent-orchestrator",
+      "targetType": "agent",
+      "targetId": "agent-brainstorm",
+      "label": "runs brainstorm"
+    },
+    {
+      "id": "edge-agent-orchestrator--cmd-architecture",
+      "sourceType": "agent",
+      "sourceId": "agent-orchestrator",
+      "targetType": "command",
+      "targetId": "cmd-architecture",
+      "label": "runs audit"
+    },
+    {
+      "id": "edge-agent-secret-guard--agent-council-reviewer",
+      "sourceType": "agent",
+      "sourceId": "agent-secret-guard",
+      "targetType": "agent",
+      "targetId": "agent-council-reviewer",
+      "label": "gates review"
+    },
+    {
+      "id": "edge-agent-product-manager--skill-project-planner",
+      "sourceType": "agent",
+      "sourceId": "agent-product-manager",
+      "targetType": "skill",
+      "targetId": "skill-project-planner",
+      "label": "feeds planning"
+    },
+    {
+      "id": "edge-agent-product-manager--skill-adr-writer",
+      "sourceType": "agent",
+      "sourceId": "agent-product-manager",
+      "targetType": "skill",
+      "targetId": "skill-adr-writer",
+      "label": "records decisions"
+    },
+    {
+      "id": "edge-agent-ux-engineer--agent-frontend-engineer",
+      "sourceType": "agent",
+      "sourceId": "agent-ux-engineer",
+      "targetType": "agent",
+      "targetId": "agent-frontend-engineer",
+      "label": "feeds specs"
+    },
+    {
+      "id": "edge-agent-ux-engineer--skill-dx",
+      "sourceType": "agent",
+      "sourceId": "agent-ux-engineer",
+      "targetType": "skill",
+      "targetId": "skill-dx",
+      "label": "applies DX lens"
+    },
+    {
+      "id": "edge-agent-brainstorm--skill-project-planner",
+      "sourceType": "agent",
+      "sourceId": "agent-brainstorm",
+      "targetType": "skill",
+      "targetId": "skill-project-planner",
+      "label": "feeds planning"
+    },
+    {
+      "id": "edge-agent-brainstorm--agent-architecture-advisor",
+      "sourceType": "agent",
+      "sourceId": "agent-brainstorm",
+      "targetType": "agent",
+      "targetId": "agent-architecture-advisor",
+      "label": "surfaces risks"
+    },
+    {
+      "id": "edge-agent-product-manager--agent-ux-engineer",
+      "sourceType": "agent",
+      "sourceId": "agent-product-manager",
+      "targetType": "agent",
+      "targetId": "agent-ux-engineer",
+      "label": "hands off to UX"
+    },
+    {
+      "id": "edge-agent-council-reviewer--skill-code-reviewer",
+      "sourceType": "agent",
+      "sourceId": "agent-council-reviewer",
+      "targetType": "skill",
+      "targetId": "skill-code-reviewer",
+      "label": "review role"
+    },
+    {
+      "id": "edge-agent-council-reviewer--skill-security-auditor",
+      "sourceType": "agent",
+      "sourceId": "agent-council-reviewer",
+      "targetType": "skill",
+      "targetId": "skill-security-auditor",
+      "label": "security role"
+    },
+    {
+      "id": "edge-agent-council-reviewer--skill-architecture-reviewer",
+      "sourceType": "agent",
+      "sourceId": "agent-council-reviewer",
+      "targetType": "skill",
+      "targetId": "skill-architecture-reviewer",
+      "label": "architect role"
     }
   ]
 }

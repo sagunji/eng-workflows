@@ -23,17 +23,18 @@ You will receive:
 
 ## Step 1 — Type check
 
-Run type checking for every affected package:
+Run type checking for every affected package. Detect the project's package
+manager and structure first — do not assume yarn or a monorepo layout.
 
 ```bash
-# Frontend
-yarn type-check
-
-# Each affected backend service
-yarn --cwd packages/<service> tsc --noEmit
-
-# Shared package if modified
-yarn workspace @your-org/shared build
+# Detect: check for package-lock.json (npm), yarn.lock (yarn), pnpm-lock.yaml (pnpm)
+# Then run the appropriate type check command:
+#   npm:  npx tsc --noEmit
+#   yarn: yarn tsc --noEmit
+#   pnpm: pnpm tsc --noEmit
+#
+# For monorepos, scope to affected packages/workspaces.
+# For single-package repos, run from the project root.
 ```
 
 If any type check fails: **stop here**. Report the exact error.
@@ -54,7 +55,10 @@ If prettier fails: note which files need formatting.
 Run the test suite scoped to affected areas:
 
 ```bash
-yarn test --testPathPattern=<affected-areas>
+# Use the project's test runner (npm test, yarn test, pnpm test, npx vitest, etc.)
+# Scope to affected areas where possible:
+#   npx vitest --testPathPattern=<affected-areas>
+#   npx jest --testPathPattern=<affected-areas>
 ```
 
 For each failing test:

@@ -159,7 +159,7 @@ All are **client-heavy** (`"use client"` on dashboard pages).
 - `type`: `skill` | `agent` | `command` (others → 400).
 - `name`: sanitized to `[a-z0-9_.-]`; empty after sanitize → 400.
 - Resolves paths under **project root** (`process.cwd()`):
-  - **skill:** `.claude/skills/{name}/SKILL.md` with aliases (e.g. `perf-profiler` → `pref-profiler`, `refactor-guide` → `refactor-guide.md`).
+  - **skill:** `.claude/skills/{name}/SKILL.md` with aliases (e.g. `refactor-guide` → `refactor-guide.md`).
   - **agent:** `.cursor/agents/{name}.md`
   - **command:** `.claude/commands/{name}.md`
 - Success: `{ content: string }` (raw markdown).

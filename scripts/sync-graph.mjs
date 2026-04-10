@@ -21,6 +21,10 @@ const GRAPH_PATH = join(ROOT, "public", "graph.json");
 
 const CHECK_MODE = process.argv.includes("--check");
 
+const EXCLUDED_NAMES = new Set([
+  "skillflow-doctor",
+]);
+
 // ---------------------------------------------------------------------------
 // Filesystem discovery
 // ---------------------------------------------------------------------------
@@ -46,7 +50,8 @@ function discoverAgents() {
       const path = join(dir, f);
       const fm = parseFrontmatter(path);
       return { name: fm.name || basename(f, ".md"), path, fm };
-    });
+    })
+    .filter((a) => !EXCLUDED_NAMES.has(a.name));
 }
 
 function discoverCommands() {
@@ -58,7 +63,8 @@ function discoverCommands() {
       const path = join(dir, f);
       const fm = parseFrontmatter(path);
       return { name: fm.name || basename(f, ".md"), path, fm };
-    });
+    })
+    .filter((c) => !EXCLUDED_NAMES.has(c.name));
 }
 
 // ---------------------------------------------------------------------------

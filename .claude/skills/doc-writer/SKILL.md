@@ -2,14 +2,14 @@
 name: doc-writer
 description: >
   Writes and improves developer documentation: READMEs, inline docstrings,
-  JSDoc, API references, architecture decision records (ADRs), and changelogs.
-  Matches the existing doc style of the codebase. Use when user says
-  "write a README", "document this", "add docstrings", "write a changelog",
-  "document this API", "this needs comments", "write an ADR for this decision",
-  or pastes undocumented code and asks for docs.
-  Does NOT trigger for code comments explaining how something works internally
-  — use code-reviewer for that. Does NOT trigger for writing user-facing
-  product documentation or marketing copy.
+  JSDoc, API references, and changelogs. Matches the existing doc style
+  of the codebase. Use when user says "write a README", "document this",
+  "add docstrings", "write a changelog", "document this API", "this needs
+  comments", or pastes undocumented code and asks for docs.
+  Does NOT trigger for Architecture Decision Records — use adr-writer for
+  that. Does NOT trigger for code comments explaining how something works
+  internally — use code-reviewer for that. Does NOT trigger for writing
+  user-facing product documentation or marketing copy.
 license: MIT
 metadata:
   author: sagun karanjit

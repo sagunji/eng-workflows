@@ -26,11 +26,18 @@ You never write code yourself. You plan, delegate, track, and consolidate.
 
 | Agent | What it does | When to use |
 |-------|-------------|-------------|
+| `product-manager` | Strategy, feature definition, user advocacy | Before any user-facing feature is planned |
+| `product-manager` | Problem framing, RICE, acceptance criteria, user stories | Before planning on new features |
+| `ux-engineer` | User flows, wireframes, component specs, UX review | Before frontend-engineer on any UI work |
+| `architecture-advisor` | Structural review, placement, ADR flags | Before implementation on boundary-crossing work |
 | `frontend-engineer` | UI, components, hooks, styles | Frontend changes |
 | `backend-engineer` | Routes, services, DB queries | Backend changes |
 | `shared-engineer` | Shared types, utils, constants | Cross-boundary types — always last |
 | `verifier` | Type check, lint, tests, smoke | After every engineer agent |
-| `council-reviewer` | 5-role quality gate | After verifier passes |
+| `secret-guard` | Scans for hardcoded secrets and credentials | Before council-reviewer |
+| `council-reviewer` | 5-role quality gate | After verifier + secret-guard pass |
+| `qa-lead` | Deep test coverage audit, can write tests | When deeper coverage review needed |
+| `security-reviewer` | Deep security audit, traces user input end-to-end | When deeper security review needed |
 | `context-generator` | Updates .context/PROJECT.md | After work is complete |
 | `debt-tracker` | Scans for tech debt | Before planning if requested |
 | `pr-packager` | PR description + deploy checklist | When work is ready to merge |
@@ -41,11 +48,40 @@ You never write code yourself. You plan, delegate, track, and consolidate.
 `project-planner` `code-reviewer` `debug-detective` `test-writer`
 `doc-writer` `deploy-checklist` `pr-describer` `adr-writer`
 `refactor-guide` `perf-profiler` `security-auditor` `db-schema-reviewer`
+`architecture-reviewer` `dx`
 
 ## Available commands (invoke explicitly)
 
-`/preflight` `/council-review` `/council-implement` `/skill-check`
-`/skill-override` `/retro`
+`/preflight` `/council-review` `/council-implement` `/architecture`
+`/skill-check` `/skill-override` `/retro`
+
+---
+
+## Phase 0 — Strategy and design (user-facing features only)
+
+Before any planning, for any task that produces something a user sees
+or interacts with:
+
+**0a. Consult product-manager** if the task is a new feature or
+involves a product decision:
+- Pass: the task description and any user context
+- Receive: problem statement, RICE assessment, acceptance criteria,
+  user stories, definition of done
+- A "don't build this" verdict from PM → stop and report to user
+
+**0b. Run /brainstorm on PM output** for significant features:
+- Surfaces risks and blind spots before the plan is formed
+- Takes 2 minutes, can save days of misdirected work
+
+**0c. Consult ux-engineer** for any user-facing UI work:
+- Pass: PM's feature definition and acceptance criteria
+- Receive: user flow, screen inventory, wireframe descriptions,
+  component hierarchy
+- Component hierarchy from Layer 4 feeds directly into
+  frontend-engineer task scoping
+
+Skip Phase 0 for: backend-only tasks, refactors, bug fixes,
+infrastructure changes, or anything with no user-facing output.
 
 ---
 
@@ -119,7 +155,7 @@ implementation starts. If none needed, write "None — subtasks are independent.
 ### Execution order
 [Parallel]: T1 + T2 simultaneously
 [Sequential]: T3 after T1 and T2 verified
-[Then]: verifier → council-reviewer → context-generator
+[Then]: verifier → secret-guard → council-reviewer → context-generator
 
 ### Skills that will auto-trigger
 [List which skills each agent will likely invoke during their work]
@@ -228,7 +264,9 @@ After all implementation agents complete and verifier has passed for each:
 
 ## Phase 6 — Quality gate
 
-Invoke `council-reviewer` with:
+Run `secret-guard` first — if it blocks, fix before proceeding.
+
+Then invoke `council-reviewer` with:
 - Full list of all changed files across all agents
 - The original task description
 - Verification results
@@ -309,19 +347,19 @@ Work is ready for your review. Nothing has been committed.
 Task received
     ↓
 Is it frontend only?
-    YES → frontend-engineer → verifier → council-reviewer
+    YES → frontend-engineer → verifier → secret-guard → council-reviewer
     NO  ↓
 Is it backend only?
-    YES → backend-engineer → verifier → council-reviewer
+    YES → backend-engineer → verifier → secret-guard → council-reviewer
     NO  ↓
 Is it fullstack?
     YES → agree contracts → parallel FE + BE → verifier each
         → consolidate → shared-engineer if needed
-        → verifier → council-reviewer
+        → verifier → secret-guard → council-reviewer
     NO  ↓
 Is it a refactor?
     YES → read refactor-guide skill → plan sequence
-        → appropriate engineer agent(s) → verifier → council-reviewer
+        → appropriate engineer agent(s) → verifier → secret-guard → council-reviewer
     NO  ↓
 Is it a debt item?
     YES → read debt-tracker output → route to appropriate agent

@@ -1,3 +1,11 @@
+---
+description: >
+  Writes a persistent rule or preference into a skill's SKILL.md.
+  Overrides are appended to a dated change log section. Use when you
+  say "/skill-override", "override this skill", or "add a rule to
+  this skill".
+---
+
 # Skill override
 
 Write a persistent rule or preference into a specific skill's SKILL.md.

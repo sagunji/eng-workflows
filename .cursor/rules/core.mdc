@@ -1,0 +1,52 @@
+---
+description: Core engineering standards for this project. Applies to every file, every task, every agent.
+alwaysApply: true
+---
+
+## Commands
+- Dev: `npm run dev`
+- Build: `npm run build`
+- Lint: `npm run lint`
+- Test: `npm run test`
+- Sync graph: `npm run sync`
+- Install: `npm install` (never `yarn` or `pnpm`)
+
+## TypeScript
+- Strict mode is on — never use `any`. Use `unknown` and narrow it.
+- Named exports only — no default exports anywhere in the codebase.
+- Prefer `type` over `interface` for data shapes.
+- All function parameters and return types must be explicitly typed.
+- Never use `@ts-ignore` — fix the type error instead.
+- Never use `as unknown as X` to force a type cast — find the real type.
+
+## Code style
+- `const` over `let`. Never `var`.
+- ES modules only — `import/export`, never `require`.
+- Destructure imports: `import { foo } from 'bar'` not `import bar from 'bar'`.
+- No barrel `index.ts` re-exports that include everything — explicit named exports only.
+- Functions under 40 lines. If longer, extract.
+
+## Hard prohibitions
+- No `console.log`, `console.warn`, `console.debug` in production code paths.
+- `console.error` only inside catch blocks.
+- Never commit `.env`, `.env.local`, or any env file that is not `.env.example`.
+- Never hardcode secrets, tokens, or connection strings.
+
+## Git
+- Conventional commits: `type(scope): description`
+- Types: `feat` `fix` `refactor` `chore` `perf` `docs` `test`
+- Message under 72 characters.
+- Run `/preflight` before every commit.
+
+## Project structure
+- `src/app/` — Next.js App Router pages and API routes
+- `src/components/` — React components
+- `src/lib/` — Shared utilities and helpers
+- `public/` — Static assets (graph.json, images)
+- `.claude/` — AI skills and commands
+- `.cursor/` — AI agents and rules
+
+## When uncertain
+- Run `npm run build` after any series of changes — catches type errors.
+- Read `CONTEXT.md` before making architectural decisions.
+- If a pattern already exists in the codebase, follow it — don't introduce a new one.

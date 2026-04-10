@@ -4,11 +4,18 @@ import { join } from "node:path";
 import { zipSync, strToU8 } from "fflate";
 import type { EntityType } from "@/types/graph";
 
-const PROJECT_ROOT = process.cwd();
+function rootJoin(...segments: string[]): string {
+  return join(/*turbopackIgnore: true*/ process.cwd(), ...segments);
+}
 
 const SKILL_DIR_ALIASES: Record<string, string> = {
-  "perf-profiler": "pref-profiler",
+  "refactor-guide": "refactor-guide.md",
 };
+
+const ALWAYS_BUNDLE: { type: EntityType; name: string }[] = [
+  { type: "agent", name: "skillflow-doctor" },
+  { type: "command", name: "skillflow-doctor" },
+];
 
 const TYPE_PLURAL: Record<EntityType, string> = {
   skill: "skills",
@@ -49,7 +56,7 @@ function resolveEntry(type: EntityType, name: string): ResolvedEntry | null {
   const zipPath = `${folder}/${safeName}.md`;
 
   return {
-    diskPath: join(PROJECT_ROOT, originalPath),
+    diskPath: rootJoin(originalPath),
     zipPath,
     originalPath,
     type,
@@ -80,11 +87,15 @@ export async function POST(request: Request) {
 
   const zipFiles: Record<string, Uint8Array> = {};
   const manifest: { zipPath: string; originalPath: string; type: string; name: string }[] = [];
+  const seen = new Set<string>();
+
+  const allEntries = [...entries, ...ALWAYS_BUNDLE];
 
   await Promise.all(
-    entries.map(async ({ type, name }) => {
+    allEntries.map(async ({ type, name }) => {
       const entry = resolveEntry(type, name);
-      if (!entry) return;
+      if (!entry || seen.has(entry.zipPath)) return;
+      seen.add(entry.zipPath);
       try {
         const content = await readFile(entry.diskPath, "utf-8");
         zipFiles[entry.zipPath] = strToU8(content);
@@ -105,6 +116,13 @@ export async function POST(request: Request) {
       { error: "No files found for the requested entities" },
       { status: 404 },
     );
+  }
+
+  try {
+    const installMd = await readFile(rootJoin("INSTALL.md"), "utf-8");
+    zipFiles["INSTALL.md"] = strToU8(installMd);
+  } catch {
+    // INSTALL.md not found — skip
   }
 
   zipFiles["manifest.json"] = strToU8(JSON.stringify(manifest, null, 2));

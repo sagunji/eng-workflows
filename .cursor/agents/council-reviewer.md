@@ -83,7 +83,7 @@ Check for vulnerabilities:
 
 ### Role 4 — DX (Developer Experience)
 
-Check clarity for the next developer:
+Check clarity for the next developer (apply the `dx` skill lens):
 - Would an unfamiliar developer understand this code quickly?
 - Are names accurate and consistent with the existing codebase?
 - Is non-obvious logic explained with a comment?

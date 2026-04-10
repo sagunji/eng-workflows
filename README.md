@@ -1,6 +1,6 @@
 # eng-workflows
 
-AI-powered engineering workflows for Claude and Cursor. **14 skills**, **14 agents**, **7 commands** — covering code review, testing, debugging, security, architecture, deployment, and more.
+AI-powered engineering workflows for Claude and Cursor. **14 skills**, **17 agents**, **7 commands** — covering code review, testing, debugging, security, architecture, deployment, and more.
 
 [**Live explorer (SkillFlow)**](https://skillflow.vercel.app) · [Guide](/src/app/guide/page.tsx)
 
@@ -35,6 +35,9 @@ graph TD
         DT["debt-tracker"]
         PR["pr-packager"]
         OB["onboarding-guide"]
+        PM["product-manager"]
+        UX["ux-engineer"]
+        BR["brainstorm"]
     end
 
     subgraph Skills["Skills — trigger from natural language"]
@@ -55,7 +58,7 @@ graph TD
     end
 
     CI --> ORC
-    ORC --> FE & BE & SE & VER & CRV & AA & CTX & DT & PR & OB & QA & SEC & SG
+    ORC --> FE & BE & SE & VER & CRV & AA & CTX & DT & PR & OB & QA & SEC & SG & PM & UX & BR
     CR --> CRV
     AR --> AA & ARV
     AA --> ARV & ADR
@@ -124,6 +127,9 @@ cp -r .claude/commands/ your-project/.claude/commands/
 | **debt-tracker** | Scans TODOs, FIXMEs, skipped tests, large files, `any` types |
 | **pr-packager** | Preflight + PR description + deploy checklist in one pass |
 | **onboarding-guide** | Generates a getting-started guide for new developers |
+| **product-manager** | Problem framing, RICE prioritisation, acceptance criteria |
+| **ux-engineer** | User flows, wireframes, component specs |
+| **brainstorm** | Divergent thinking, risk surfacing, option generation |
 
 ---
 
@@ -224,7 +230,7 @@ flowchart LR
     ├── deploy-checklist/
     ├── doc-writer/
     ├── dx/
-    ├── pref-profiler/
+    ├── perf-profiler/
     ├── pr-describer/
     ├── project-planner/
     ├── refactor-guide.md/
@@ -232,9 +238,10 @@ flowchart LR
     └── test-writer/
 
 .cursor/
-└── agents/             ← specialist roles (14)
+└── agents/             ← specialist roles (17)
     ├── architecture-advisor.md
     ├── backend-engineer.md
+    ├── brainstorm.md
     ├── context-generator.md
     ├── council-reviewer.md
     ├── debt-tracker.md
@@ -242,10 +249,12 @@ flowchart LR
     ├── onboarding-guide.md
     ├── orchestrator.md
     ├── pr-packager.md
+    ├── product-manager.md
     ├── qa-lead.md
     ├── secret-guard.md
     ├── security-reviewer.md
     ├── shared-engineer.md
+    ├── ux-engineer.md
     └── verifier.md
 
 src/                    ← SkillFlow explorer app (Next.js)

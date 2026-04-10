@@ -1,0 +1,59 @@
+---
+description: Next.js App Router and React conventions. Applies to all frontend files.
+globs: ["src/**"]
+alwaysApply: false
+---
+
+## Server vs client components
+- Default to Server Components — only add `"use client"` when you need:
+  - `useState`, `useEffect`, or other React hooks
+  - Browser-only APIs (`window`, `document`, `localStorage`)
+  - Event handlers (`onClick`, `onChange`, etc.)
+- Never put `"use client"` at the top of a page — push it down to the
+  smallest component that actually needs it.
+- Never `fetch` inside a Client Component — pass data as props from a
+  Server Component parent.
+
+## Data fetching
+- Fetch in Server Components using `async/await` directly — no `useEffect` for data.
+- Use `fetch` with Next.js cache options: `{ cache: 'force-cache' }` for static,
+  `{ next: { revalidate: N } }` for ISR, `{ cache: 'no-store' }` for dynamic.
+- For client-side mutations: use Server Actions, not API routes.
+- Never fetch the same data in multiple places — lift to the closest shared Server Component.
+
+## Component structure
+- One component per file. File name matches component name in kebab-case.
+- Props interface declared above the component: `type [Name]Props = { ... }`.
+- Component is a `const` arrow function, not a `function` declaration.
+
+## File locations
+- Pages: `src/app/[route]/page.tsx`
+- Layouts: `src/app/[route]/layout.tsx`
+- API routes: `src/app/api/[endpoint]/route.ts`
+- Shared UI components: `src/components/`
+- Utility functions: `src/lib/`
+
+## Tailwind
+- Utility classes only — no custom CSS files except `globals.css`.
+- No arbitrary values (`w-[327px]`) unless absolutely unavoidable.
+- Responsive: mobile-first (`sm:` `md:` `lg:`).
+- Dark mode via `dark:` prefix — never hardcode colours.
+- Class order: layout → spacing → typography → colour → state.
+- Extract repeated class combinations into a component, not a `@apply`.
+
+## Error and loading states
+- Every page that fetches data needs:
+  - `loading.tsx` alongside `page.tsx`
+  - `error.tsx` alongside `page.tsx`
+- Every async Server Component must handle thrown errors gracefully.
+- Empty states are UI — define them in the component, not as an afterthought.
+
+## Performance
+- Dynamic import heavy components: `const X = dynamic(() => import('./X'))`.
+- Images: always use `next/image` — never `<img>`.
+- Fonts: always use `next/font` — never a raw `<link>`.
+- `useMemo` and `useCallback` only for demonstrated re-render problems — not pre-emptively.
+
+## Do not
+- Do not use `useRouter` for navigation — use `<Link>` from `next/link`.
+- Do not use `getServerSideProps` or `getStaticProps` — App Router only.

@@ -1,8 +1,13 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import type { EntityType } from "@/types/graph";
+import type { EntityType, GraphData } from "@/types/graph";
 import { DownloadAllButton, RecipeDownloadButton } from "@/components/guide-downloads";
 import { SiteFooter } from "@/components/site-footer";
+import graphData from "../../../public/graph.json";
+
+const graph = graphData as GraphData;
+const entityCount = (type: string) =>
+  graph.entities.filter((e) => e.entityType === type).length;
 
 export const metadata: Metadata = {
   title: "Guide — SkillFlow",
@@ -12,7 +17,7 @@ export const metadata: Metadata = {
 const LAYER_CARDS = [
   {
     layer: "Skills",
-    count: 14,
+    count: entityCount("skill"),
     tagline: "Trigger with natural language",
     description: "Focused capabilities that activate when you describe what you need. Say \"review this code\" and the code-reviewer skill runs. Say \"this is slow\" and perf-profiler investigates.",
     color: "border-gray-600 bg-gray-700/20",
@@ -26,7 +31,7 @@ const LAYER_CARDS = [
   },
   {
     layer: "Agents",
-    count: 14,
+    count: entityCount("agent"),
     tagline: "Specialist roles for focused work",
     description: "Domain experts that own specific areas: frontend, backend, security, QA, architecture. The orchestrator dispatches them based on what the task needs.",
     color: "border-violet-500/30 bg-violet-500/10",
@@ -40,7 +45,7 @@ const LAYER_CARDS = [
   },
   {
     layer: "Commands",
-    count: 7,
+    count: entityCount("command"),
     tagline: "Invoke structured workflows",
     description: "Multi-step workflows you run explicitly. /council-implement builds a feature with a full team of agents. /preflight checks your code before every commit. /architecture audits your codebase structure.",
     color: "border-amber-500/30 bg-amber-500/10",
@@ -278,7 +283,7 @@ export default function GuidePage() {
             AI-powered workflows for<br />your development process
           </h1>
           <p className="mx-auto mt-5 max-w-2xl text-lg leading-relaxed text-gray-400">
-            14 skills, 14 agents, and 7 commands that turn common engineering tasks
+            {entityCount("skill")} skills, {entityCount("agent")} agents, and {entityCount("command")} commands that turn common engineering tasks
             into repeatable, high-quality processes. Works with Claude and Cursor.
             Download what you need and use them in your own project.
           </p>
@@ -395,7 +400,7 @@ export default function GuidePage() {
             <div className="mt-6 flex flex-col items-center gap-3">
               <DownloadAllButton />
               <p className="text-xs text-gray-600">
-                14 skills + 14 agents + 7 commands &middot; .claude/ &amp; .cursor/ directories
+                {entityCount("skill")} skills + {entityCount("agent")} agents + {entityCount("command")} commands &middot; .claude/ &amp; .cursor/ directories
               </p>
             </div>
           </div>

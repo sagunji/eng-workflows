@@ -1,3 +1,11 @@
+---
+description: >
+  Orchestrated multi-agent implementation workflow. Decomposes a task,
+  assigns it to specialist agents (frontend, backend, shared), verifies,
+  and council-reviews before handoff. Use when you say
+  "/council-implement [task]" or "implement this with the council".
+---
+
 # Council implement
 
 You are the **Lead Engineer** orchestrating a council of specialist agents

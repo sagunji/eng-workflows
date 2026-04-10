@@ -5,10 +5,18 @@
 
 STAGED=$(git diff --cached --name-only --diff-filter=ACDMR)
 
+SKIP_PATTERNS="skillflow-doctor"
+
 CONTENT_CHANGED=false
 for file in $STAGED; do
   case "$file" in
     .claude/skills/*|.claude/commands/*|.cursor/agents/*)
+      base=$(basename "$file" .md)
+      skip=false
+      for pat in $SKIP_PATTERNS; do
+        [ "$base" = "$pat" ] && skip=true && break
+      done
+      [ "$skip" = true ] && continue
       CONTENT_CHANGED=true
       break
       ;;

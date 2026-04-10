@@ -1,0 +1,78 @@
+---
+description: Vitest testing conventions. Applies to all test and spec files.
+globs: ["**/*.test.ts", "**/*.test.tsx", "**/*.spec.ts", "**/*.spec.tsx"]
+alwaysApply: false
+---
+
+## Framework
+- Vitest only — no Jest imports (`describe`, `it`, `expect`, `vi` from `vitest`).
+- Run a single test file: `npm run test -- path/to/file.test.ts`.
+- Run a single test: `npm run test -- -t "test name"`.
+- Watch mode: `npm run test -- --watch`.
+
+## File naming and location
+- Unit tests: colocated with the file they test — `foo.ts` → `foo.test.ts`.
+- Integration tests: `src/__tests__/integration/`.
+- Test utilities and fixtures: `src/__tests__/helpers/`.
+- Never name a test file `index.test.ts` — name it after what it tests.
+
+## Structure
+```typescript
+import { describe, it, expect, vi, beforeEach } from 'vitest'
+
+describe('ComponentOrFunction', () => {
+  describe('methodOrScenario', () => {
+    it('does X when Y', () => {
+      // Arrange
+      const input = ...
+
+      // Act
+      const result = fn(input)
+
+      // Assert
+      expect(result).toBe(expected)
+    })
+  })
+})
+```
+
+## Naming
+- Test names are full sentences: `'returns null when user is not found'`
+  not `'null user'` or `'test 1'`.
+- `describe` block = the thing being tested.
+- Nested `describe` block = the scenario or method.
+- `it` = the specific behaviour being verified.
+
+## What to test
+- Public behaviour — inputs and outputs, not internal implementation.
+- Happy path: one or two tests maximum.
+- Error paths: every thrown error, every rejected promise.
+- Edge cases: null, undefined, empty string, empty array, zero, negative.
+- Boundary conditions: off-by-one, max/min values.
+
+## What not to test
+- Private methods or internal variables.
+- Third-party library behaviour — mock it, don't test it.
+- Simple getters/setters with no logic.
+- Implementation details that could change without behaviour changing.
+
+## Mocking
+- Use `vi.mock()` for modules, `vi.spyOn()` for methods.
+- Mock at the boundary — mock HTTP clients, mock `fetch`, mock external services.
+- Never mock the thing you are testing.
+- Reset mocks between tests: use `beforeEach(() => { vi.clearAllMocks() })`.
+
+## Assertions
+- One logical assertion per test — multiple `expect` calls are fine if they
+  describe the same outcome.
+- Prefer specific matchers: `toEqual`, `toContain`, `toThrow` over `toBeTruthy`.
+- For async: `await expect(promise).resolves.toBe(x)` or
+  `await expect(promise).rejects.toThrow(ErrorClass)`.
+
+## Do not
+- Do not use `test.skip` without a comment explaining why and a ticket reference.
+- Do not use `test.only` in committed code.
+- Do not make real HTTP requests or real DB calls in unit tests.
+- Do not share mutable state between tests — each test sets up its own state.
+- Do not assert on implementation details like call counts unless the call
+  itself is the observable behaviour being tested.
